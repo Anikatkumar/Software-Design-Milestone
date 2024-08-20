@@ -11,7 +11,7 @@ public class DelayClass extends Thread{
         while(true) {
             try {
                 gameBoard.moveBlockDown();
-                Thread.sleep(2000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }

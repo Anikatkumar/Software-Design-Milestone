@@ -19,7 +19,7 @@ public class SplashScreen extends JWindow {
         int y = (screen.height - height) / 2;
         setBounds(x, y, width, height);
 
-        JLabel label = new JLabel(new ImageIcon("E:\\Masters\\Sem3\\software design\\Project\\Software-Design-Milestone\\src\\src\\resources\\images\\SplashScreenRe1.png") , SwingConstants.CENTER);
+        JLabel label = new JLabel(new ImageIcon("C:\\Users\\Sakshi\\Documents\\GitHub\\Software-Design-Milestone\\src\\src\\resources\\images\\SplashScreenRe1.png") , SwingConstants.CENTER);
         JLabel copyRightText = new JLabel("7805ICT, Assignment Group 14 - Copyright-2024 - Tetris", JLabel.CENTER);
         copyRightText.setFont(new Font("Sans-Serif", Font.BOLD, 12));
         content.add(label, BorderLayout.CENTER);
