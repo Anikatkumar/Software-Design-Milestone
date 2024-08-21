@@ -9,7 +9,5 @@ public class Main {
         MainMenuScreen mainMenu = new MainMenuScreen();
         splash.showSplash();
         SwingUtilities.invokeLater(mainMenu::showMainScreen);
-        System.out.println("Dssd");
     }
 }
-
