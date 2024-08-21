@@ -6,6 +6,17 @@
     </constraints>
     <properties/>
     <border type="none"/>
-    <children/>
+    <children>
+      <component id="5cab4" class="javax.swing.JButton" binding="Back">
+        <constraints border-constraint="South"/>
+        <properties>
+          <hideActionText value="false"/>
+          <text value="Back"/>
+        </properties>
+      </component>
+      <vspacer id="605a8">
+        <constraints border-constraint="East"/>
+      </vspacer>
+    </children>
   </grid>
 </form>

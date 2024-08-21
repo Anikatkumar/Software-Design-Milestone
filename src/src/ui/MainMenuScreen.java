@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainMenuScreen extends JFrame{
-    String pathToMenuIcon = "C:\\Users\\Sakshi\\Documents\\GitHub\\Software-Design-Milestone\\src\\src\\resources\\images\\menuIcon.png";
+    String pathToMenuIcon = "E:\\Masters\\Sem3\\software design\\Project\\Software-Design-Milestone\\src\\src\\resources\\images\\menuIcon.png";
     public void showMainScreen(){
 
         int width = 750;
