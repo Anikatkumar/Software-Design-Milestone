@@ -2,6 +2,8 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class GameScreen extends JFrame {
     private  JPanel GameBoard;
@@ -25,4 +27,25 @@ public class GameScreen extends JFrame {
         gameScreen.setTitle("Play");
         gameScreen.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
+
+    private static JPanel getButtonPanel(JFrame frame) {
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new MainMenuScreen().showMainScreen();
+                frame.dispose();
+            }
+        });
+        backButton.setBackground(Color.lightGray);
+        backButton.setOpaque(true);
+        Dimension buttonSize = new Dimension(150, 40);
+        backButton.setPreferredSize(buttonSize);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(backButton);
+        return buttonPanel;
+
+    }
 }
+
