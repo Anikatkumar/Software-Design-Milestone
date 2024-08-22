@@ -61,25 +61,6 @@ public class GameScreen extends JFrame {
     }
 
 
-    private static JPanel getButtonPanel(JFrame frame) {
-        JButton backButton = new JButton("Back");
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new MainMenuScreen().showMainScreen();
-                frame.dispose();
-            }
-        });
-        backButton.setBackground(Color.lightGray);
-        backButton.setOpaque(true);
-        Dimension buttonSize = new Dimension(150, 40);
-        backButton.setPreferredSize(buttonSize);
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.add(backButton);
-        return buttonPanel;
-
-    }
 
 
     private void gameKeyboardControls() {
