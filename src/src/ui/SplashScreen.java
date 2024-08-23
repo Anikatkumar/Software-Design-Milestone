@@ -2,6 +2,7 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 public class SplashScreen extends JWindow {
 
@@ -19,7 +20,12 @@ public class SplashScreen extends JWindow {
         int y = (screen.height - height) / 2;
         setBounds(x, y, width, height);
 
-        JLabel label = new JLabel(new ImageIcon("E:\\Masters\\Sem3\\software design\\Project\\Software-Design-Milestone\\src\\src\\resources\\images\\SplashScreenRe1.png") , SwingConstants.CENTER);
+        // Setting Image Path Dynamically
+        String basePath = new File("").getAbsolutePath();
+        String imagePath = basePath + "/src/src/resources/images/SplashScreenRe1.png";
+        ImageIcon imageIcon = new ImageIcon(imagePath);
+        JLabel label = new JLabel(imageIcon, SwingConstants.CENTER);
+
         JLabel copyRightText = new JLabel("7805ICT, Assignment Group 14 - Copyright-2024 - Tetris", JLabel.CENTER);
         copyRightText.setFont(new Font("Sans-Serif", Font.BOLD, 12));
         content.add(label, BorderLayout.CENTER);

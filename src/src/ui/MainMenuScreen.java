@@ -6,9 +6,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class MainMenuScreen extends JFrame{
-    String pathToMenuIcon = "E:\\Masters\\Sem3\\software design\\Project\\Software-Design-Milestone\\src\\src\\resources\\images\\menuIcon.png";
+    // Setting Image Path Dynamically
+    String basePath = new File("").getAbsolutePath();
+    String pathToMenuIcon = basePath + "/src/src/resources/images/menuIcon.png";
+
     public void showMainScreen(){
 
         int width = 750;
