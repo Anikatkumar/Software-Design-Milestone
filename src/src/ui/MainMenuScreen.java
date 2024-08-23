@@ -1,5 +1,7 @@
 package ui;
 
+import menuOptionButtons.ExitButton;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -68,12 +70,15 @@ public class MainMenuScreen extends JFrame{
         highScoresButton.setBackground(Color.lightGray);
         highScoresButton.setOpaque(true);
 
-        JButton exitButton = new JButton("Exit");
-        exitButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+//        JButton exitButton = new JButton("Exit");
+//        exitButton.addActionListener(new ActionListener() {
+//            public void actionPerformed(ActionEvent e) {
+//                System.exit(0);
+//            }
+//        });
+        ExitButton exitButtonComponent = new ExitButton();
+        JButton exitButton = exitButtonComponent.displayExitButton();
+
         exitButton.setBackground(Color.lightGray);
         exitButton.setOpaque(true);
 

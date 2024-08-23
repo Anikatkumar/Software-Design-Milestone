@@ -18,18 +18,21 @@ public class GameScreen extends JFrame {
     public GameScreen() {
         System.out.println("GAME SCREEN CONS");
         gameBoard = new GameBoard(20);
-        backButton = new BackButton();
+
         playLabel = new PlayLabel("Play", 290, 4);
         gameKeyboardControls();
         this.add(gameBoard);
         this.add(playLabel);
 
-        this.add(backButton);
 
 
         threadClass = new DelayClass(gameBoard, this);
         threadClass.start();
-//        DelayClass threadClass = new DelayClass(gameBoard, this).start();
+////        DelayClass threadClass = new DelayClass(gameBoard, this).start();
+//        backButton = new BackButton();
+//        this.add(backButton);
+        backButton = new BackButton(threadClass,this , gameBoard);
+        this.add(backButton);
         scoreLabel = new JLabel();
 
 //        backButtonTest1.setVisible(true);
@@ -81,31 +84,31 @@ public class GameScreen extends JFrame {
 
 
     private void gameKeyboardControls() {
-        backButton.addActionListener(new ActionListener() {
-                                         @Override
-                                         public void actionPerformed(ActionEvent e) {
-                                             System.out.println("back button clicked");
-                                             System.out.println("Game paused");
-                                             threadClass.pauseGame();  // Pause the game
-                                             if (gameBoard.maximumHeightReached()) {
-                                                 new MainMenuScreen().showMainScreen();
-                                                 dispose();
-
-                                             } else {
-                                                 int response = JOptionPane.showConfirmDialog(null,
-                                                         "Do you want to Exit?", "Confirm Dialog", JOptionPane.YES_NO_OPTION,
-                                                         JOptionPane.QUESTION_MESSAGE);
-                                                 if (response == JOptionPane.YES_OPTION) {
-                                                     new MainMenuScreen().showMainScreen();
-                                                     dispose();
-
-                                                 } else {
-                                                     threadClass.resumeGame();
-                                                 }
-                                             }
-                                         }
-                                     }
-        );
+//        backButton.addActionListener(new ActionListener() {
+//                                         @Override
+//                                         public void actionPerformed(ActionEvent e) {
+//                                             System.out.println("back button clicked");
+//                                             System.out.println("Game paused");
+//                                             threadClass.pauseGame();  // Pause the game
+//                                             if (gameBoard.maximumHeightReached()) {
+//                                                 new MainMenuScreen().showMainScreen();
+//                                                 dispose();
+//
+//                                             } else {
+//                                                 int response = JOptionPane.showConfirmDialog(null,
+//                                                         "Do you want to Exit?", "Confirm Dialog", JOptionPane.YES_NO_OPTION,
+//                                                         JOptionPane.QUESTION_MESSAGE);
+//                                                 if (response == JOptionPane.YES_OPTION) {
+//                                                     new MainMenuScreen().showMainScreen();
+//                                                     dispose();
+//
+//                                                 } else {
+//                                                     threadClass.resumeGame();
+//                                                 }
+//                                             }
+//                                         }
+//                                     }
+//        );
         InputMap keyInput = this.getRootPane().getInputMap();
         ActionMap keyActionMap = this.getRootPane().getActionMap();
 
