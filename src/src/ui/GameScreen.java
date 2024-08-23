@@ -13,18 +13,18 @@ public class GameScreen extends JFrame {
     private JLabel scoreLabel;
     private DelayClass threadClass;
     private PlayLabel playLabel;
-    private JButton backButtonTest1 = new JButton("Back");
+
 
     public GameScreen() {
         System.out.println("GAME SCREEN CONS");
         gameBoard = new GameBoard(20);
         backButton = new BackButton();
-        playLabel = new PlayLabel();
+        playLabel = new PlayLabel("Play", 290, 4);
         gameKeyboardControls();
         this.add(gameBoard);
         this.add(playLabel);
+
         this.add(backButton);
-//        backButtonTest = new BackButtonTest();
 
 
         threadClass = new DelayClass(gameBoard, this);
@@ -54,6 +54,7 @@ public class GameScreen extends JFrame {
 
 
     }
+
     private static JPanel getButtonPanel(JFrame frame) {
         JButton backButton = new JButton("Back");
         backButton.addActionListener(new ActionListener() {
@@ -79,18 +80,32 @@ public class GameScreen extends JFrame {
     }
 
 
-
-
     private void gameKeyboardControls() {
-//        backButtonTest1.addActionListener(new ActionListener() {
-//                                              @Override
-//                                              public void actionPerformed(ActionEvent e) {
-//                                                  System.out.println("back button clicked");
-//
-//
-//                                              }
-//                                          }
-//        );
+        backButton.addActionListener(new ActionListener() {
+                                         @Override
+                                         public void actionPerformed(ActionEvent e) {
+                                             System.out.println("back button clicked");
+                                             System.out.println("Game paused");
+                                             threadClass.pauseGame();  // Pause the game
+                                             if (gameBoard.maximumHeightReached()) {
+                                                 new MainMenuScreen().showMainScreen();
+                                                 dispose();
+
+                                             } else {
+                                                 int response = JOptionPane.showConfirmDialog(null,
+                                                         "Do you want to Exit?", "Confirm Dialog", JOptionPane.YES_NO_OPTION,
+                                                         JOptionPane.QUESTION_MESSAGE);
+                                                 if (response == JOptionPane.YES_OPTION) {
+                                                     new MainMenuScreen().showMainScreen();
+                                                     dispose();
+
+                                                 } else {
+                                                     threadClass.resumeGame();
+                                                 }
+                                             }
+                                         }
+                                     }
+        );
         InputMap keyInput = this.getRootPane().getInputMap();
         ActionMap keyActionMap = this.getRootPane().getActionMap();
 
@@ -132,11 +147,23 @@ public class GameScreen extends JFrame {
         keyActionMap.put("pause", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+//                add(gamePauseLabel);
+
                 if (threadClass.isGameRunning()) {
                     if (threadClass.gamePaused) {
                         System.out.println("Game resumed");
                         threadClass.resumeGame();  // Resume the game
                     } else {
+//                        int response = JOptionPane.showConfirmDialog(null,
+//                                "Game Paused, Press P to continue", "Confirm Dialog", JOptionPane.YES_NO_OPTION,
+//                                JOptionPane.QUESTION_MESSAGE);
+//                        if (response == JOptionPane.YES_OPTION) {
+//                            new MainMenuScreen().showMainScreen();
+//                            dispose();
+//
+//                        } else {
+//                            threadClass.resumeGame();
+//                        }
                         System.out.println("Game paused");
                         threadClass.pauseGame();  // Pause the game
                     }
@@ -160,7 +187,3 @@ public class GameScreen extends JFrame {
 
 }
 
-
-
-
-}

@@ -33,8 +33,8 @@ public class DelayClass extends Thread {
 
             // Game logic for moving the block down and other game operations
             Color colorAssigned = gameBoard.createNewBlock();
-//            while (gameBoard.moveBlockDown() && !gamePaused) {
-            while (gameBoard.moveBlockDown()) {
+            while (gameBoard.moveBlockDown() && !gamePaused) {
+//            while (gameBoard.moveBlockDown()) {
                 try {
                     Thread.sleep(350);
                 } catch (InterruptedException e) {

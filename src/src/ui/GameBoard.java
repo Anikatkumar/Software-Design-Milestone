@@ -23,6 +23,7 @@ public class GameBoard extends JPanel {
     private Color[] blockColors = {Color.CYAN, Color.GREEN, Color.ORANGE, Color.yellow, Color.red, Color.GRAY, Color.pink};
     private Color newBlockColorSelectedAtRandom;
     Color createdNewBlockWithColor;
+    private PlayLabel gamePauseLabel;
     JButton backButton = new JButton("Back");
     public int[][][] shapes = {{{1, 0}, {1, 0}, {1, 1}} //L
             , {{1, 1, 1}}, // straight line
@@ -37,6 +38,8 @@ public class GameBoard extends JPanel {
     public GameBoard(int noOfColumns) {
         this.noOfColumns = noOfColumns;
         int boardHeight = 400;
+        gamePauseLabel = new PlayLabel("Game Paused, Press P to continue",290,50);
+        this.add(gamePauseLabel);
         int boardWidth = 400;
         this.setBounds(150, 60, boardWidth, boardHeight);
         this.setBackground(Color.white);
@@ -45,6 +48,7 @@ public class GameBoard extends JPanel {
         noOfRows = boardHeight / blockSize;
         settledBlocks = new Color[noOfRows][noOfColumns];
         createdNewBlockWithColor = createNewBlock();
+
     }
 
     public boolean moveBlockDown() {
@@ -170,24 +174,24 @@ public class GameBoard extends JPanel {
     /**
      * Fill color to the last settled block on the screen
      */
-//    private void fillInTheLastBlock(Graphics g) {
-////        System.out.println("Filling block");
-//        Color color;
-//        for (int i = 0; i < noOfRows; i++) {
-//            for (int j = 0; j < noOfColumns; j++) {
-//                color = settledBlocks[i][j];
-//                if (color != null) {
-//                    int horizontalPosition = j * blockSize;
-//                    int verticalPosition = i * blockSize;
-//                    g.setColor(color);
-//                    g.fillRect(horizontalPosition, verticalPosition, blockSize, blockSize);
-//                    g.setColor(Color.black);
-//                    g.drawRect(horizontalPosition, verticalPosition, blockSize, blockSize);
-//
-//                }
-//            }
-//        }
-//    }
+    private void fillInTheLastBlock(Graphics g) {
+//        System.out.println("Filling block");
+        Color color;
+        for (int i = 0; i < noOfRows; i++) {
+            for (int j = 0; j < noOfColumns; j++) {
+                color = settledBlocks[i][j];
+                if (color != null) {
+                    int horizontalPosition = j * blockSize;
+                    int verticalPosition = i * blockSize;
+                    g.setColor(color);
+                    g.fillRect(horizontalPosition, verticalPosition, blockSize, blockSize);
+                    g.setColor(Color.black);
+                    g.drawRect(horizontalPosition, verticalPosition, blockSize, blockSize);
+
+                }
+            }
+        }
+    }
 
     /*
      * merge pre spawned blocks to the game board
