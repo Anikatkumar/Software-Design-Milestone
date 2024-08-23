@@ -170,24 +170,24 @@ public class GameBoard extends JPanel {
     /**
      * Fill color to the last settled block on the screen
      */
-//    private void fillInTheLastBlock(Graphics g) {
-////        System.out.println("Filling block");
-//        Color color;
-//        for (int i = 0; i < noOfRows; i++) {
-//            for (int j = 0; j < noOfColumns; j++) {
-//                color = settledBlocks[i][j];
-//                if (color != null) {
-//                    int horizontalPosition = j * blockSize;
-//                    int verticalPosition = i * blockSize;
-//                    g.setColor(color);
-//                    g.fillRect(horizontalPosition, verticalPosition, blockSize, blockSize);
-//                    g.setColor(Color.black);
-//                    g.drawRect(horizontalPosition, verticalPosition, blockSize, blockSize);
-//
-//                }
-//            }
-//        }
-//    }
+    private void fillInTheLastBlock(Graphics g) {
+//        System.out.println("Filling block");
+        Color color;
+        for (int i = 0; i < noOfRows; i++) {
+            for (int j = 0; j < noOfColumns; j++) {
+                color = settledBlocks[i][j];
+                if (color != null) {
+                    int horizontalPosition = j * blockSize;
+                    int verticalPosition = i * blockSize;
+                    g.setColor(color);
+                    g.fillRect(horizontalPosition, verticalPosition, blockSize, blockSize);
+                    g.setColor(Color.black);
+                    g.drawRect(horizontalPosition, verticalPosition, blockSize, blockSize);
+
+                }
+            }
+        }
+    }
 
     /*
      * merge pre spawned blocks to the game board

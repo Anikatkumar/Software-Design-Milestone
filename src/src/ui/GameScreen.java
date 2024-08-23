@@ -13,28 +13,29 @@ public class GameScreen extends JFrame {
     private JLabel scoreLabel;
     private DelayClass threadClass;
     private PlayLabel playLabel;
-    private JButton backButtonTest1 = new JButton("Back");
 
     public GameScreen() {
-        System.out.println("GAME SCREEN CONS");
+        System.out.println("GAME SCREEN DISPLAY");
         gameBoard = new GameBoard(20);
-        backButton = new BackButton();
+
         playLabel = new PlayLabel();
         gameKeyboardControls();
         this.add(gameBoard);
         this.add(playLabel);
-        this.add(backButton);
-//        backButtonTest = new BackButtonTest();
-
 
         threadClass = new DelayClass(gameBoard, this);
         threadClass.start();
 //        DelayClass threadClass = new DelayClass(gameBoard, this).start();
-        scoreLabel = new JLabel();
 
-//        backButtonTest1.setVisible(true);
-//        backButtonTest1.setBounds(300, 480, 150, 50);
-//        this.add(backButtonTest1);
+        /*
+        Passing the following arguments:
+        1. frame - to close current frame (game screen) and launch main menu
+        2. threadClass - to allow resume game
+        */
+        backButton = new BackButton(this, threadClass, this);
+        this.add(backButton);
+
+        scoreLabel = new JLabel();
     }
 
 
@@ -78,19 +79,7 @@ public class GameScreen extends JFrame {
         scoreLabel.setText("Score: " + score);
     }
 
-
-
-
-    private void gameKeyboardControls() {
-//        backButtonTest1.addActionListener(new ActionListener() {
-//                                              @Override
-//                                              public void actionPerformed(ActionEvent e) {
-//                                                  System.out.println("back button clicked");
-//
-//
-//                                              }
-//                                          }
-//        );
+    protected void gameKeyboardControls() {
         InputMap keyInput = this.getRootPane().getInputMap();
         ActionMap keyActionMap = this.getRootPane().getActionMap();
 
@@ -157,10 +146,5 @@ public class GameScreen extends JFrame {
         });
 
     }
-
-}
-
-
-
 
 }

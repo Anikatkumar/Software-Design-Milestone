@@ -21,7 +21,7 @@ public class ConfigurationScreen extends JFrame {
         mainPanel.setBorder(new EmptyBorder(50, 60, 50, 0));
 
         JPanel configurationPanel = new JPanel();
-        configurationPanel.setLayout(new GridLayout(9, 3,5,5));
+        configurationPanel.setLayout(new GridLayout(8, 3,5,5));
 
         JLabel fieldWidthLabel = new JLabel("Field Width (No of cells):");
         JSlider fieldWidthSlider = new JSlider(5, 15, 10);
@@ -50,7 +50,6 @@ public class ConfigurationScreen extends JFrame {
             }
         });
 
-
         JLabel gameLevelLabel = new JLabel("Game Level:");
         JSlider gameLevelSlider = new JSlider(1, 10, 4);
         gameLevelSlider.setMajorTickSpacing(1);
@@ -73,8 +72,11 @@ public class ConfigurationScreen extends JFrame {
         soundEffectCheckbox.setSelected(true);
         JLabel soundEffectStatusLabel = new JLabel("On");
 
+        /*
+        // Removed. For Milestone 2
         JCheckBox aiPlayCheckbox = new JCheckBox("AI Play (On|Off):");
         JLabel aiPlayStatusLabel = new JLabel("Off");
+        */
 
         JCheckBox extendModeCheckbox = new JCheckBox("Extend Mode (On|Off):");
         JLabel extendModeStatusLabel = new JLabel("Off");
@@ -109,6 +111,8 @@ public class ConfigurationScreen extends JFrame {
         });
         configurationPanel.add(new JLabel());
 
+        /*
+        // Removed. For Milestone 2
         configurationPanel.add(aiPlayCheckbox);
         configurationPanel.add(aiPlayStatusLabel);
         aiPlayCheckbox.addActionListener(new ActionListener() {
@@ -117,6 +121,7 @@ public class ConfigurationScreen extends JFrame {
             }
         });
         configurationPanel.add(new JLabel());
+        */
 
         configurationPanel.add(extendModeCheckbox);
         configurationPanel.add(extendModeStatusLabel);
