@@ -7,9 +7,11 @@ import java.io.File;
 public class SplashScreen extends JWindow {
 
     private final int duration;
+
     public SplashScreen(int duration) {
         this.duration = duration;
     }
+
     public void showSplash() {
         JPanel content = (JPanel) getContentPane();
         content.setBackground(Color.white);
@@ -34,13 +36,17 @@ public class SplashScreen extends JWindow {
         Color oraRed = new Color(255,255,255);
         content.setBorder(BorderFactory.createLineBorder(oraRed, 10));
         setVisible(true);
+
         try {
+            // Pause the execution of the current thread
+            System.out.println("(SplashScreen) Thread.sleep in "+ duration + " milliseconds.");
             Thread.sleep(duration);
         } catch (Exception e) {
             System.out.println("Exception Occurred (SplashScreen): " + e.getMessage());
         }
         setVisible(false);
     }
+
     public void showSplashAndExit() {
         showSplash();
         System.exit(0);
