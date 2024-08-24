@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 public class MainMenuScreen extends JFrame{
+
     // Setting Image Path Dynamically
     String basePath = new File("").getAbsolutePath();
     String pathToMenuIcon = basePath + "/src/src/resources/images/menuIcon.png";
@@ -44,9 +45,10 @@ public class MainMenuScreen extends JFrame{
         playButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Ceases to exist once showScreen() finishes execution.
                 new GameScreen().showScreen();
                 dispose();
-
+                System.out.println("(MainMenuScreen) GameScreen disposed.");
             }
         });
         playButton.setBackground(Color.lightGray);
