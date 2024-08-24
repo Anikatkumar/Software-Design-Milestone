@@ -32,7 +32,6 @@ public class GameBlock {
             degreeOfRotation = 0;
         }
         blockShape = blockShapesRotations[degreeOfRotation];
-
     }
 
     public void transposeShapeMatrixToRotate(){
@@ -40,11 +39,10 @@ public class GameBlock {
         for(int i = 0; i < 4; i++){
             int matrixRows = blockShape[0].length;
             int matrixCols = blockShape.length;
-            blockShapesRotations [i] =  new int[matrixRows][matrixCols];
+            blockShapesRotations[i] =  new int[matrixRows][matrixCols];
             for(int j = 0; j < matrixRows; j++){
                 for(int k = 0; k < matrixCols; k++){
                     blockShapesRotations[i][j][k] = blockShape[matrixCols - k - 1][j];
-
                 }
             }
             blockShape = blockShapesRotations[i];

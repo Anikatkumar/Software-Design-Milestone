@@ -43,8 +43,10 @@ public class MainMenuScreen extends JFrame{
         playButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Ceases to exist once showScreen() finishes execution.
                 new GameScreen().showScreen();
                 dispose();
+                System.out.println("(MainMenuScreen) GameScreen disposed.");
             }
         });
         playButton.setBackground(Color.lightGray);

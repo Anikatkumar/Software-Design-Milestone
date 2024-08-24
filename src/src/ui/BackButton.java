@@ -26,6 +26,8 @@ public class BackButton extends JButton {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Back Button clicked.");
+                System.out.println("(GameScreen) Game Paused.");
+                gameThread.pauseGame();
 
                 // Confirmation Dialog
                 // Yes - Close frame and display Main Menu
@@ -39,15 +41,14 @@ public class BackButton extends JButton {
                 );
 
                 if (response == JOptionPane.YES_OPTION) {
+                    System.out.println("Confirmation Dialog - Yes");
                     new MainMenuScreen().showMainScreen();
                     frame.dispose();
                 } else {
                     // Resume the game if "No" is clicked
                     if (gameThread != null && gameThread.isGameRunning()) {
-                        System.out.println("No option clicked.");
+                        System.out.println("Confirmation Dialog - No");
                         gameThread.resumeGame();
-                        gameScreen.gameKeyboardControls(); // Re-engage keyboard controls
-                        frame.requestFocus(); // Ensure the game screen regains focus
                     }
                 }
             }
