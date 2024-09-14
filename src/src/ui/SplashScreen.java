@@ -39,7 +39,7 @@ public class SplashScreen extends JWindow {
 
         try {
             // Pause the execution of the current thread
-            System.out.println("(SplashScreen) Thread.sleep in "+ duration + " milliseconds.");
+//            System.out.println("(SplashScreen) Thread.sleep in "+ duration + " milliseconds.");
             Thread.sleep(duration);
         } catch (Exception e) {
             System.out.println("Exception Occurred (SplashScreen): " + e.getMessage());

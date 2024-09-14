@@ -23,7 +23,7 @@ public class DelayClass extends Thread {
             synchronized (pauseLock) {
                 while (gamePaused) {
                     try {
-                        System.out.println("(DelayClass) Pause");
+//                        System.out.println("(DelayClass) Pause");
                         pauseLock.wait();  // Wait until the game is resumed
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -34,7 +34,7 @@ public class DelayClass extends Thread {
             // Condition to prevent creation of new block if there is still a current block
             if (colorAssigned==null) {
                 colorAssigned = gameBoard.createNewBlock();
-                System.out.println("(DelayClass) New Block Created.");
+//                System.out.println("(DelayClass) New Block Created.");
             }
 
             // Move the block down until it can no longer move
@@ -48,7 +48,7 @@ public class DelayClass extends Thread {
                 // Check if the game is over
                 gameOver = gameBoard.maximumHeightReached();
                 if (gameOver) {
-                    System.out.println("Maximum height reached");
+//                    System.out.println("Maximum height reached");
                     break;
                 }
 
@@ -58,7 +58,7 @@ public class DelayClass extends Thread {
             }
 
             try {
-                Thread.sleep(350); // Control the speed of the block's downward movement
+                Thread.sleep(200); // Control the speed of the block's downward movement
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }
@@ -66,14 +66,14 @@ public class DelayClass extends Thread {
     }
 
     public void pauseGame() {
-        System.out.println("(DelayClass) pauseGame()");
+//        System.out.println("(DelayClass) pauseGame()");
         synchronized (pauseLock) {
             gamePaused = true;
         }
     }
 
     public void resumeGame() {
-        System.out.println("(DelayClass) resumeGame()");
+//        System.out.println("(DelayClass) resumeGame()");
         synchronized (pauseLock) {
             gamePaused = false;
             pauseLock.notify();  // Resume the game
@@ -87,5 +87,9 @@ public class DelayClass extends Thread {
     public void stopGame() {
         gameRunning = false;
         resumeGame();  // Ensure the thread is not stuck waiting
+    }
+
+    public boolean gameOver(){
+        return gameBoard.maximumHeightReached();
     }
 }

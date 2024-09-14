@@ -72,11 +72,13 @@ public class ConfigurationScreen extends JFrame {
         soundEffectCheckbox.setSelected(true);
         JLabel soundEffectStatusLabel = new JLabel("On");
 
-        /*
-        // Removed. For Milestone 2
+
         JCheckBox aiPlayCheckbox = new JCheckBox("AI Play (On|Off):");
         JLabel aiPlayStatusLabel = new JLabel("Off");
-        */
+        configurationPanel.add(aiPlayCheckbox);
+        configurationPanel.add(aiPlayStatusLabel);
+
+
 
         JCheckBox extendModeCheckbox = new JCheckBox("Extend Mode (On|Off):");
         JLabel extendModeStatusLabel = new JLabel("Off");
@@ -111,7 +113,7 @@ public class ConfigurationScreen extends JFrame {
         });
         configurationPanel.add(new JLabel());
 
-        /*
+
         // Removed. For Milestone 2
         configurationPanel.add(aiPlayCheckbox);
         configurationPanel.add(aiPlayStatusLabel);
@@ -121,7 +123,7 @@ public class ConfigurationScreen extends JFrame {
             }
         });
         configurationPanel.add(new JLabel());
-        */
+
 
         configurationPanel.add(extendModeCheckbox);
         configurationPanel.add(extendModeStatusLabel);

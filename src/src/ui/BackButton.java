@@ -26,30 +26,36 @@ public class BackButton extends JButton {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Back Button clicked.");
-                System.out.println("(GameScreen) Game Paused.");
+//                System.out.println("(GameScreen) Game Paused.");
                 gameThread.pauseGame();
 
                 // Confirmation Dialog
                 // Yes - Close frame and display Main Menu
                 // No - Do nothing. Continue with game
-                int response = JOptionPane.showConfirmDialog(
-                        frame,
-                        "Are you sure you want to stop the current game?",
-                        "Stop Game",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE
-                );
 
-                if (response == JOptionPane.YES_OPTION) {
-                    System.out.println("Confirmation Dialog - Yes");
+                if (!gameThread.gameOver()) {
+                    int response = JOptionPane.showConfirmDialog(
+                            frame,
+                            "Are you sure you want to stop the current game?",
+                            "Stop Game",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE
+                    );
+
+                    if (response == JOptionPane.YES_OPTION) {
+//                        System.out.println("Confirmation Dialog - Yes");
+                        new MainMenuScreen().showMainScreen();
+                        frame.dispose();
+                    } else {
+                        // Resume the game if "No" is clicked
+                        if (gameThread != null && gameThread.isGameRunning()) {
+//                            System.out.println("Confirmation Dialog - No");
+                            gameThread.resumeGame();
+                        }
+                    }
+                } else {
                     new MainMenuScreen().showMainScreen();
                     frame.dispose();
-                } else {
-                    // Resume the game if "No" is clicked
-                    if (gameThread != null && gameThread.isGameRunning()) {
-                        System.out.println("Confirmation Dialog - No");
-                        gameThread.resumeGame();
-                    }
                 }
             }
         });

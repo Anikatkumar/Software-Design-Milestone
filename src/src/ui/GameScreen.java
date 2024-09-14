@@ -17,7 +17,7 @@ public class GameScreen extends JFrame {
 
 
     public GameScreen() {
-        System.out.println("GAME SCREEN DISPLAY");
+//        System.out.println("GAME SCREEN DISPLAY");
 
         gameBoard = new GameBoard(20);
         playLabel = new PlayLabel();    // Play Label in the Middle of the Play Screen
@@ -34,7 +34,7 @@ public class GameScreen extends JFrame {
         gameBoard.add(pauseLabel);
 
         threadClass = new DelayClass(gameBoard, this);
-        System.out.println("(GameScreen) NEW threadClass started.");
+//        System.out.println("(GameScreen) NEW threadClass started.");
         threadClass.start();
 
         gameBoard.initializeThread(threadClass);
@@ -52,7 +52,8 @@ public class GameScreen extends JFrame {
 
     public void showScreen() {
         //GameScreen gameScreen = new GameScreen();
-        int width = 750;
+//        int width = 750;
+        int width = 600;
         int height = 600;
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (screen.width - width) / 2;
@@ -108,7 +109,7 @@ public class GameScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (threadClass.gamePaused) {
                     pauseLabel.setVisible(false);
-                    System.out.println("(GameScreen) Game Resumed.");
+//                    System.out.println("(GameScreen) Game Resumed.");
                     threadClass.resumeGame();
                 } else {
                     // Set up the label for the message

@@ -49,8 +49,8 @@ public class GameBoard extends JPanel {
 
     public GameBoard(int noOfColumns) {
         this.noOfColumns = noOfColumns;
-        int boardHeight = 400;
-        int boardWidth = 400;
+        int boardHeight = 390;
+        int boardWidth = 300;
         this.setBounds(150, 60, boardWidth, boardHeight);
         this.setBackground(Color.white);
         this.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -58,7 +58,7 @@ public class GameBoard extends JPanel {
         noOfRows = boardHeight / blockSize;
         settledBlocks = new Color[noOfRows][noOfColumns];
         createdNewBlockWithColor = createNewBlock();
-        System.out.println("(Game Board) New Block Created. ");
+//        System.out.println("(Game Board) New Block Created. ");
     }
 
     public void initializeThread(DelayClass thread) {
@@ -139,7 +139,7 @@ public class GameBoard extends JPanel {
 
         currentShape = shapes[randomNumber];
         newBlockColorSelectedAtRandom = blockColors[r.nextInt(blockColors.length)];
-        System.out.println("New Shape: " + newBlockColorSelectedAtRandom.toString() + " " + this.shapeNames[randomNumber]);
+//        System.out.println("New Shape: " + newBlockColorSelectedAtRandom.toString() + " " + this.shapeNames[randomNumber]);
 
         gameBlock = new GameBlock(currentShape, newBlockColorSelectedAtRandom);
         blockXGridInitialPosition = 9;
@@ -294,7 +294,7 @@ public class GameBoard extends JPanel {
             return;
         }
         if (!checkBottom()) {
-            System.out.println("Reached Bottom");
+//            System.out.println("Reached Bottom");
         } else {
             blockYGridInitialPosition++;
             repaint();

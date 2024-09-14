@@ -48,7 +48,7 @@ public class MainMenuScreen extends JFrame{
                 // Ceases to exist once showScreen() finishes execution.
                 new GameScreen().showScreen();
                 dispose();
-                System.out.println("(MainMenuScreen) GameScreen disposed.");
+//                System.out.println("(MainMenuScreen) GameScreen disposed.");
             }
         });
         playButton.setBackground(Color.lightGray);
