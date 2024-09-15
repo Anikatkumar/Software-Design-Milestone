@@ -15,7 +15,6 @@ public class GameBoard extends JPanel {
     private JLabel playLabel = new JLabel("Play");
     int xAxis;
     int yAxis;
-    static int totalScore = 0;
     private DelayClass threadClass;
     int blockXGridInitialPosition;
     int blockYGridInitialPosition;
@@ -63,6 +62,9 @@ public class GameBoard extends JPanel {
 
     public void initializeThread(DelayClass thread) {
         this.threadClass = thread;
+
+        // music playing background one
+        GameBlock.playBackGroundMusic();
     }
 
 
@@ -94,6 +96,7 @@ public class GameBoard extends JPanel {
 
     public int clearOutCompletedLines() {
         boolean flag;
+        int totalScore = 0;
         for (int i = noOfRows - 1; i >= 0; i--) {
             flag = true;
             for (int j = 0; j < noOfColumns; j++) {
@@ -103,13 +106,17 @@ public class GameBoard extends JPanel {
                 }
             }
             if (flag) {
-                totalScore += 2;
+                totalScore += 1;
                 clearOneCompletedLine(i);
                 moveBackgroundLinesDown(i);
                 clearOneCompletedLine(0);
                 i++;
                 repaint();
             }
+        }
+        if (totalScore > 0) {
+            // line erase sound
+            GameBlock.playEraseLineMusic();
         }
         return totalScore;
     }

@@ -9,15 +9,34 @@ public class GameBlock {
     private Color blockColor;
     private int[][][] blockShapesRotations;
     private int degreeOfRotation = 0;
-
+    private static SoundPlayer soundPlayer = new SoundPlayer();
 
     public GameBlock(int[][] blockShape, Color blockColor) {
-//        System.out.println(blockShape);
         this.blockShape = blockShape;
         this.blockColor = blockColor;
         transposeShapeMatrixToRotate();
         degreeOfRotation = 0;
     }
+
+    public static void playBackGroundMusic(){
+        soundPlayer.playBackgroundMusic();
+    }
+    public static void playMoveTurnMusic(){
+        soundPlayer.playMoveTurnMusic();
+    }
+    public static void playEraseLineMusic(){
+
+        soundPlayer.playEraseLineMusic();
+    }
+    public static void playLevelUpMusic(){
+        soundPlayer.playLevelUpMusic();
+    }
+    public static void playGameFinishMusic(){
+        soundPlayer.playGameFinishMusic();
+    }
+
+
+
     public int[][] getBlockShape() {
         return blockShape;
     }

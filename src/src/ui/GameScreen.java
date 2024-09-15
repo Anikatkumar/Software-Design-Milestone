@@ -11,9 +11,11 @@ public class GameScreen extends JFrame {
     private GameBoard gameBoard;
     private BackButton backButton;
     private JLabel scoreLabel;
+    private JLabel levelLabel;
     private JLabel pauseLabel;
     private DelayClass threadClass;
     private PlayLabel playLabel;
+
 
 
     public GameScreen() {
@@ -42,13 +44,17 @@ public class GameScreen extends JFrame {
         backButton = new BackButton(this, threadClass, this);
         this.add(backButton, BorderLayout.SOUTH);
 
-        scoreLabel = new JLabel("Score", JLabel.LEFT);
+        scoreLabel = new JLabel("Score: 0", JLabel.LEFT);
+
+        levelLabel = new JLabel("Level: 1", JLabel.LEFT);
+
         add(scoreLabel, BorderLayout.WEST);
+        add(levelLabel, BorderLayout.BEFORE_FIRST_LINE);
         scoreLabel.setVisible(true);
+        levelLabel.setVisible(true);
 
         gameKeyboardControls();
     }
-
 
     public void showScreen() {
         //GameScreen gameScreen = new GameScreen();
@@ -69,6 +75,10 @@ public class GameScreen extends JFrame {
         scoreLabel.setText("Score: " + score);
     }
 
+    public void updateLevel(int level) {
+        levelLabel.setText("Level: " + level);
+    }
+
 
     protected void gameKeyboardControls() {
         InputMap keyInput = this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -83,24 +93,28 @@ public class GameScreen extends JFrame {
         keyActionMap.put("right", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                GameBlock.playMoveTurnMusic();
                 gameBoard.moveBlockRight();
             }
         });
         keyActionMap.put("left", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                GameBlock.playMoveTurnMusic();
                 gameBoard.moveBlockLeft();
             }
         });
         keyActionMap.put("up", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                GameBlock.playMoveTurnMusic();
                 gameBoard.rotateBlockOnUpKeyPressed();
             }
         });
         keyActionMap.put("down", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                GameBlock.playMoveTurnMusic();
                 gameBoard.moveBlockDownFast();
             }
         });

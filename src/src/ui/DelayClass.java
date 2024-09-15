@@ -11,7 +11,8 @@ public class DelayClass extends Thread {
     public boolean gameRunning = true;
     public boolean gamePaused = false;
     public Color colorAssigned;
-
+    public int speedBlock = 1000;
+    public int level = 1;
     public DelayClass(GameBoard gameBoard, GameScreen gameScreen) {
         this.gameBoard = gameBoard;
         this.gameScreen = gameScreen;
@@ -42,12 +43,22 @@ public class DelayClass extends Thread {
             if (!blockMovedDown) {
                 // If the block can't move down, it has settled
                 gameBoard.mergeBlock(colorAssigned);
-                totalScore = gameBoard.clearOutCompletedLines();
+                totalScore += gameBoard.clearOutCompletedLines();
                 gameScreen.updateScore(totalScore);
 
+                if((totalScore / 4) > level){
+                    speedBlock -= 200; //increase speed
+                    if(speedBlock < 0){
+                        speedBlock = 100;  // maintain speed
+                    }
+                    level = totalScore/4;
+                    gameScreen.updateLevel(level);
+                }
+                System.out.println("Score: " + totalScore + ", Speed " + speedBlock + ", Level " + level);
                 // Check if the game is over
                 gameOver = gameBoard.maximumHeightReached();
                 if (gameOver) {
+                    GameBlock.playGameFinishMusic();
 //                    System.out.println("Maximum height reached");
                     break;
                 }
@@ -58,7 +69,7 @@ public class DelayClass extends Thread {
             }
 
             try {
-                Thread.sleep(200); // Control the speed of the block's downward movement
+                Thread.sleep(speedBlock); // Control the speed of the block's downward movement
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }
