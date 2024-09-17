@@ -1,12 +1,16 @@
 package ui;
 
+import scores.GameScores;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class HighScoresScreen extends JFrame {
     public HighScoresScreen() {
+        GameScores gameScores = new GameScores();
         JFrame frame = new JFrame("High Scores");
         frame.setSize(750,550);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -32,21 +36,38 @@ public class HighScoresScreen extends JFrame {
         highScoresPanel.add(nameHeader);
         highScoresPanel.add(scoreHeader);
 
-        String[] name = {"Sakshi", "Anikat", "Angelina", "Harpireet", "Neeraj", "John", "Lee", "Harry", "Kevin", "Juan"};
-        String[] score = {"9000", "8000", "7000", "6000", "5000", "5500", "4000", "3000", "2000", "1000"};
+//        String[] name = {"Sakshi", "Anikat", "Angelina", "Harpireet", "Neeraj", "John", "Lee", "Harry", "Kevin", "Juan"};
+//        String[] score = {"9000", "8000", "7000", "6000", "5000", "5500", "4000", "3000", "2000", "1000"};
 
-        for (int i = 0; i < name.length; i++) {
-            JLabel nameLabel = new JLabel(name[i], JLabel.CENTER);
-            nameLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-            nameLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        List<GameScores> gameScoresPlayersInfo = gameScores.readScores();
+        for (GameScores gameScore : gameScoresPlayersInfo) {
+            int score = gameScore.getScore();
+            String name = gameScore.getPlayerName();
+                JLabel nameLabel = new JLabel(name, JLabel.CENTER);
+                nameLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+                nameLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
-            JLabel scoreLabel = new JLabel(score[i], JLabel.CENTER);
-            scoreLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-            scoreLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+                JLabel scoreLabel = new JLabel(String.valueOf(score), JLabel.CENTER);
+                scoreLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+                scoreLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
-            highScoresPanel.add(nameLabel);
-            highScoresPanel.add(scoreLabel);
+                highScoresPanel.add(nameLabel);
+                highScoresPanel.add(scoreLabel);
+
         }
+
+//        for (int i = 0; i < name.length; i++) {
+//            JLabel nameLabel = new JLabel(name[i], JLabel.CENTER);
+//            nameLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+//            nameLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+//
+//            JLabel scoreLabel = new JLabel(score[i], JLabel.CENTER);
+//            scoreLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+//            scoreLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+//
+//            highScoresPanel.add(nameLabel);
+//            highScoresPanel.add(scoreLabel);
+//        }
 
         frame.add(highScoresPanel, BorderLayout.CENTER);
 

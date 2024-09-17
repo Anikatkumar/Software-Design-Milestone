@@ -1,5 +1,7 @@
 package ui;
 
+import settings.GameSettings;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
@@ -16,6 +18,7 @@ public class GameBoard extends JPanel {
     int xAxis;
     int yAxis;
     private DelayClass threadClass;
+    GameSettings gameSettings = new GameSettings();
     int blockXGridInitialPosition;
     int blockYGridInitialPosition;
     private final Color[][] settledBlocks;
@@ -47,6 +50,7 @@ public class GameBoard extends JPanel {
 
 
     public GameBoard(int noOfColumns) {
+        gameSettings = gameSettings.readSettingsFromJsonFile();
         this.noOfColumns = noOfColumns;
         int boardHeight = 390;
         int boardWidth = 300;
@@ -63,8 +67,11 @@ public class GameBoard extends JPanel {
     public void initializeThread(DelayClass thread) {
         this.threadClass = thread;
 
+        if(gameSettings.isGameMusicOn())
         // music playing background one
-        GameBlock.playBackGroundMusic();
+        {
+            GameBlock.playBackGroundMusic();
+        }
     }
 
 
@@ -110,13 +117,19 @@ public class GameBoard extends JPanel {
                 clearOneCompletedLine(i);
                 moveBackgroundLinesDown(i);
                 clearOneCompletedLine(0);
+                System.out.println("total score: " + totalScore + ", i: " + i) ;
+
                 i++;
+                System.out.println("total score: " + totalScore + ", i: " + i) ;
+
                 repaint();
             }
         }
         if (totalScore > 0) {
             // line erase sound
-            GameBlock.playEraseLineMusic();
+            if(gameSettings.isGameSoundsOn()) {
+                GameBlock.playEraseLineMusic();
+            }
         }
         return totalScore;
     }

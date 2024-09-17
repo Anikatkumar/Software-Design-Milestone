@@ -1,5 +1,7 @@
 package ui;
 
+import settings.GameSettings;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -15,12 +17,12 @@ public class GameScreen extends JFrame {
     private JLabel pauseLabel;
     private DelayClass threadClass;
     private PlayLabel playLabel;
-
+    GameSettings gameSettings = new GameSettings();
 
 
     public GameScreen() {
 //        System.out.println("GAME SCREEN DISPLAY");
-
+        gameSettings = gameSettings.readSettingsFromJsonFile();
         gameBoard = new GameBoard(20);
         playLabel = new PlayLabel();    // Play Label in the Middle of the Play Screen
 
@@ -93,28 +95,36 @@ public class GameScreen extends JFrame {
         keyActionMap.put("right", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GameBlock.playMoveTurnMusic();
+                if (gameSettings.isGameSoundsOn()) {
+                    GameBlock.playMoveTurnMusic();
+                }
                 gameBoard.moveBlockRight();
             }
         });
         keyActionMap.put("left", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GameBlock.playMoveTurnMusic();
+                if (gameSettings.isGameSoundsOn()) {
+                    GameBlock.playMoveTurnMusic();
+                }
                 gameBoard.moveBlockLeft();
             }
         });
         keyActionMap.put("up", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GameBlock.playMoveTurnMusic();
+                if (gameSettings.isGameSoundsOn()) {
+                    GameBlock.playMoveTurnMusic();
+                }
                 gameBoard.rotateBlockOnUpKeyPressed();
             }
         });
         keyActionMap.put("down", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GameBlock.playMoveTurnMusic();
+                if (gameSettings.isGameSoundsOn()) {
+                    GameBlock.playMoveTurnMusic();
+                }
                 gameBoard.moveBlockDownFast();
             }
         });

@@ -44,8 +44,13 @@ public class DelayClass extends Thread {
                 // If the block can't move down, it has settled
                 gameBoard.mergeBlock(colorAssigned);
                 totalScore += gameBoard.clearOutCompletedLines();
+
+                // total score received here is number of lines removed so modifying code now.
+                totalScore+=100;
+
                 gameScreen.updateScore(totalScore);
 
+                // level updation logic
                 if((totalScore / 4) > level){
                     speedBlock -= 200; //increase speed
                     if(speedBlock < 0){
@@ -54,6 +59,8 @@ public class DelayClass extends Thread {
                     level = totalScore/4;
                     gameScreen.updateLevel(level);
                 }
+
+
                 System.out.println("Score: " + totalScore + ", Speed " + speedBlock + ", Level " + level);
                 // Check if the game is over
                 gameOver = gameBoard.maximumHeightReached();
