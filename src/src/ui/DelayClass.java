@@ -5,7 +5,8 @@ import java.awt.*;
 public class DelayClass extends Thread {
     private GameBoard gameBoard;
     private GameScreen gameScreen;
-    private int totalScore = 0;
+    private int totalLines = 0;
+    private int score =0;
     private boolean gameOver;
     private final Object pauseLock = new Object();
     public boolean gameRunning = true;
@@ -43,25 +44,24 @@ public class DelayClass extends Thread {
             if (!blockMovedDown) {
                 // If the block can't move down, it has settled
                 gameBoard.mergeBlock(colorAssigned);
-                totalScore += gameBoard.clearOutCompletedLines();
+                totalLines = gameBoard.clearOutCompletedLines();
 
-                // total score received here is number of lines removed so modifying code now.
-                totalScore+=100;
-
-                gameScreen.updateScore(totalScore);
+                //System.out.println(totalLines + ":  total lines erased");
+//                totalLines+=100;
+                //gameBoard.updateScoreOnRowsCleared(totalLines);
 
                 // level updation logic
-                if((totalScore / 4) > level){
-                    speedBlock -= 200; //increase speed
-                    if(speedBlock < 0){
-                        speedBlock = 100;  // maintain speed
-                    }
-                    level = totalScore/4;
-                    gameScreen.updateLevel(level);
-                }
+//                if((totalScore ==  1000)){
+//                    speedBlock -= 200; //increase speed
+//                    if(speedBlock < 0){
+//                        speedBlock = 100;  // maintain speed
+//                    }
+//                    level++;
+//                    gameScreen.updateLevel(level);
+//                }
 
 
-                System.out.println("Score: " + totalScore + ", Speed " + speedBlock + ", Level " + level);
+//                System.out.println("Score: " + totalScore + ", Speed " + speedBlock + ", Level " + level);
                 // Check if the game is over
                 gameOver = gameBoard.maximumHeightReached();
                 if (gameOver) {

@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
-import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 
 public class GameBoard extends JPanel {
@@ -25,6 +24,10 @@ public class GameBoard extends JPanel {
     private Color[] blockColors = {Color.CYAN, Color.GREEN, Color.ORANGE, Color.yellow, Color.red, Color.GRAY, Color.pink};
     private Color newBlockColorSelectedAtRandom;
     Color createdNewBlockWithColor;
+    private int score=0;
+    private int currentLevel = 1;
+    private int linesErased = 0;
+    private GameScreen gameScreen;
 
     public int[][][] shapes = {
             {{1, 0}, {1, 0}, {1, 1}},   // L
@@ -49,7 +52,8 @@ public class GameBoard extends JPanel {
     public int[][] currentShape;
 
 
-    public GameBoard(int noOfColumns) {
+    public GameBoard(int noOfColumns, GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
         gameSettings = gameSettings.readSettingsFromJsonFile();
         this.noOfColumns = noOfColumns;
         int boardHeight = 390;
@@ -103,7 +107,7 @@ public class GameBoard extends JPanel {
 
     public int clearOutCompletedLines() {
         boolean flag;
-        int totalScore = 0;
+        int rowsErased = 0;
         for (int i = noOfRows - 1; i >= 0; i--) {
             flag = true;
             for (int j = 0; j < noOfColumns; j++) {
@@ -113,25 +117,41 @@ public class GameBoard extends JPanel {
                 }
             }
             if (flag) {
-                totalScore += 1;
+                rowsErased ++;
                 clearOneCompletedLine(i);
                 moveBackgroundLinesDown(i);
                 clearOneCompletedLine(0);
-                System.out.println("total score: " + totalScore + ", i: " + i) ;
+                //System.out.println("Rows Erased: " + rowsErased + ", i: " + i) ;
 
                 i++;
-                System.out.println("total score: " + totalScore + ", i: " + i) ;
+                //System.out.println("Rows Erased: " + rowsErased + ", i: " + i) ;
 
                 repaint();
             }
         }
-        if (totalScore > 0) {
+        //System.out.println("Rows erased in this batch: " + rowsErased);
+
+        if (rowsErased > 0) {
             // line erase sound
             if(gameSettings.isGameSoundsOn()) {
                 GameBlock.playEraseLineMusic();
             }
+            updateScoreOnRowsCleared(rowsErased);
+
+            linesErased += rowsErased;
+            //System.out.println("Total lines erased: " + linesErased);
+
+            gameScreen.updateLinesErased(linesErased);
+
+
+            if(linesErased %10 == 0){
+                currentLevel++;
+                gameScreen.updateLevel(currentLevel);
+                System.out.println("Level up! Current level: " + currentLevel);
+
+            }
         }
-        return totalScore;
+        return rowsErased;
     }
 
 
@@ -140,7 +160,20 @@ public class GameBoard extends JPanel {
             settledBlocks[rowNumber][k] = null; // clear line
         }
     }
+    void updateScoreOnRowsCleared(int rowsErased) {
+        if (rowsErased == 1) {
+            score += 100;
+        } else if (rowsErased == 2) {
+            score += 300;
+        } else if (rowsErased == 3) {
+            score += 600;
+        } else if (rowsErased == 4) {
+            score += 1000;
+        }
+        //System.out.println("Updated score: " + score);
 
+        gameScreen.updateScore(score);
+    }
 
     private void moveBackgroundLinesDown(int rowNumber) {
         for (int rowOfBlock = rowNumber; rowOfBlock > 0; rowOfBlock--) {
