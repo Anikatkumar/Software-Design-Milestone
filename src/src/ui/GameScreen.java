@@ -12,10 +12,10 @@ public class GameScreen extends JFrame {
     private JButton Back;
     private GameBoard gameBoard;
     private BackButton backButton;
-    private JLabel scoreLabel = new JLabel("Score: 0");
-    private JLabel currentLevelLabel = new JLabel("Current Level: 1 ");
+    private JLabel scoreLabel = new JLabel("Score: 0", JLabel.CENTER);
     private JLabel pauseLabel;
-    private JLabel linesErasedLabel = new JLabel("Lines Erased: 0");
+    private JLabel currentLevelLabel;
+    private JLabel linesErasedLabel = new JLabel("Lines Erased: 0", JLabel.CENTER);
     private DelayClass threadClass;
     private PlayLabel playLabel;
     GameSettings gameSettings = new GameSettings();
@@ -80,9 +80,18 @@ public class GameScreen extends JFrame {
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridLayout(0, 1));
 
+        int initialLevel = gameSettings.getGameLevel();
+        int currentLevel = initialLevel;
+        boolean musicStatus = gameSettings.isGameMusicOn();
+        boolean soundStatus = gameSettings.isGameSoundsOn();
+
         JLabel playerInfoLabel = new JLabel("Game Info (Player 1)", JLabel.CENTER);
         JLabel playerTypeLabel = new JLabel("Player Type: Human", JLabel.CENTER);
-        JLabel initialLevelLabel = new JLabel("Initial Level: 1", JLabel.CENTER);
+        JLabel initialLevelLabel = new JLabel("Initial Level: "+ initialLevel, JLabel.CENTER);
+        currentLevelLabel = new JLabel("Current Level: "+ currentLevel, JLabel.CENTER);
+
+        JLabel musicLabel = new JLabel("Music:" + ((musicStatus)?"On":"Off"), JLabel.CENTER);
+        JLabel soundLabel = new JLabel("Sound:" + ((soundStatus)?"On":"Off"), JLabel.CENTER);
 
         infoPanel.add(playerInfoLabel);
         infoPanel.add(playerTypeLabel);
@@ -90,6 +99,8 @@ public class GameScreen extends JFrame {
         infoPanel.add(currentLevelLabel);
         infoPanel.add(linesErasedLabel);
         infoPanel.add(scoreLabel);
+        infoPanel.add(musicLabel);
+        infoPanel.add(soundLabel);
 
         infoPanel.setPreferredSize(new Dimension(150, 390));
         infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
@@ -122,6 +133,7 @@ public class GameScreen extends JFrame {
 
     public void updateLevel(int level) {
         currentLevelLabel.setText("Current Level: " + level);
+        System.out.println("level:"+level);
         currentLevelLabel.revalidate();
         currentLevelLabel.repaint();
     }

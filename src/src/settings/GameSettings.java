@@ -11,7 +11,7 @@ public class GameSettings {
     private boolean aiModeOn;
     private int fieldWidth;
     private int fieldHeight;
-    private int gameLevel;
+    private int initialGameLevel;
     private boolean gameMusicOn;
     private boolean gameSoundsOn;
     private boolean extendModeOn;
@@ -41,11 +41,11 @@ public class GameSettings {
     }
 
     public int getGameLevel() {
-        return gameLevel;
+        return initialGameLevel;
     }
 
     public void setGameLevel(int gameLevel) {
-        this.gameLevel = gameLevel;
+        this.initialGameLevel = gameLevel;
     }
 
     public boolean isGameMusicOn() {
@@ -106,7 +106,7 @@ public class GameSettings {
                 "aiModeOn='" + aiModeOn + '\'' +
                 ", fieldWidth=" + fieldWidth +
                 ", fieldHeight=" + fieldHeight +
-                ", gameLevel=" + gameLevel +
+                ", initialGameLevel=" + initialGameLevel +
                 ", gameMusicOn=" + gameMusicOn +
                 ", gameSoundsOn=" + gameSoundsOn +
                 ", extendModeOn=" + extendModeOn +

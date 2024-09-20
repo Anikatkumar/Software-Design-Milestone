@@ -14,10 +14,12 @@ public class ConfigurationScreen extends JFrame {
     private boolean aiModeOn;
     private int fieldWidth;
     private int fieldHeight;
-    private int gameLevel;
+    private int initialGameLevel;
     private boolean gameMusicOn;
     private boolean gameSoundsOn;
     private boolean extendModeOn;
+    int minLevel = 1;
+    int maxLevel = 10;
 
     public ConfigurationScreen() {
 
@@ -32,7 +34,7 @@ public class ConfigurationScreen extends JFrame {
         aiModeOn = savedGameSettings.getAiModeOn();
         fieldWidth = savedGameSettings.getFieldWidth();
         fieldHeight = savedGameSettings.getFieldHeight();
-        gameLevel = savedGameSettings.getGameLevel();
+        initialGameLevel = savedGameSettings.getGameLevel();
         gameMusicOn = savedGameSettings.isGameMusicOn();
         gameSoundsOn = savedGameSettings.isGameSoundsOn();
         extendModeOn = savedGameSettings.isExtendModeOn();
@@ -65,7 +67,7 @@ public class ConfigurationScreen extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 fieldWidth = fieldWidthSlider.getValue();
                 fieldWidthValueLabel.setText(String.valueOf(fieldWidthSlider.getValue()));
-                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , gameLevel);
+                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , initialGameLevel);
 
             }
         });
@@ -81,13 +83,17 @@ public class ConfigurationScreen extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 fieldHeight = fieldHeightSlider.getValue();
                 fieldHeightValueLabel.setText(String.valueOf(fieldHeightSlider.getValue()));
-                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , gameLevel);
+                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , initialGameLevel);
 
             }
         });
 
+        if (initialGameLevel < minLevel || initialGameLevel > maxLevel) {
+            System.out.println("Invalid initial level from JSON: " + initialGameLevel);
+            initialGameLevel = 1;  // Set to a default valid value if out of range
+        }
         JLabel gameLevelLabel = new JLabel("Game Level:");
-        JSlider gameLevelSlider = new JSlider(1, 10, gameLevel);
+        JSlider gameLevelSlider = new JSlider(1, 10, initialGameLevel);
         gameLevelSlider.setMajorTickSpacing(1);
         gameLevelSlider.setPaintTicks(true);
         gameLevelSlider.setPaintLabels(true);
@@ -96,9 +102,9 @@ public class ConfigurationScreen extends JFrame {
         gameLevelSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                gameLevel = gameLevelSlider.getValue();
+                initialGameLevel = gameLevelSlider.getValue();
                 gameLevelValueLabel.setText(String.valueOf(gameLevelSlider.getValue()));
-                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , gameLevel);
+                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , initialGameLevel);
             }
         });
 
@@ -140,7 +146,7 @@ public class ConfigurationScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 musicStatusLabel.setText((musicCheckbox.isSelected() ? "On" : "Off"));
                 gameMusicOn = musicCheckbox.isSelected();
-                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , gameLevel);
+                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , initialGameLevel);
             }
         });
         configurationPanel.add(new JLabel());
@@ -151,7 +157,7 @@ public class ConfigurationScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 soundEffectStatusLabel.setText((soundEffectCheckbox.isSelected() ? "On" : "Off"));
                 gameSoundsOn = soundEffectCheckbox.isSelected();
-                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , gameLevel);
+                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , initialGameLevel);
             }
         });
         configurationPanel.add(new JLabel());
@@ -164,7 +170,7 @@ public class ConfigurationScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 aiPlayStatusLabel.setText((aiPlayCheckbox.isSelected() ? "On" : "Off"));
                 aiModeOn = aiPlayCheckbox.isSelected();
-                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , gameLevel);
+                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , initialGameLevel);
             }
         });
         configurationPanel.add(new JLabel());
@@ -176,7 +182,7 @@ public class ConfigurationScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 extendModeStatusLabel.setText((extendModeCheckbox.isSelected() ? "On" : "Off"));
                 extendModeOn = extendModeCheckbox.isSelected();
-                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , gameLevel);
+                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , initialGameLevel);
             }
         });
         //configurationPanel.add(new JLabel());

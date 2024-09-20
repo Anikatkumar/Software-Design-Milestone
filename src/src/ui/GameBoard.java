@@ -1,5 +1,7 @@
 package ui;
 
+import blockFactories.BlockFactory;
+import blockFactories.BlockFactoryProducer;
 import settings.GameSettings;
 
 import javax.swing.*;
@@ -25,31 +27,32 @@ public class GameBoard extends JPanel {
     private Color newBlockColorSelectedAtRandom;
     Color createdNewBlockWithColor;
     private int score=0;
-    private int currentLevel = 1;
+    private int initialLevel;
+    private int currentLevel;
     private int linesErased = 0;
     private GameScreen gameScreen;
 
-    public int[][][] shapes = {
-            {{1, 0}, {1, 0}, {1, 1}},   // L
-            {{1, 1, 1}},                // Straight Line
-            {{1, 1, 0}, {0, 1, 1}},     // Z
-            {{1, 1, 1}, {0, 1, 0}},     // T
-            {{1, 1}, {1, 1}},           // Box
-            {{0, 1}, {0, 1}, {1, 1}},   // Reverse L
-            {{0, 1, 1}, {1, 1, 0}}      // Reverse Z
-    };
-
-    public String[] shapeNames = {
-            "L",                // L
-            "Straight Line",    // Straight Line
-            "Z",                // Z
-            "T",                // T
-            "Box",              // Box
-            "Reverse L",        // Reverse L
-            "Reverse Z"         // Reverse Z
-    };
-
-    public int[][] currentShape;
+//        public int[][][] shapes = {
+//                {{1, 0}, {1, 0}, {1, 1}},   // L
+//                {{1, 1, 1}},                // Straight Line
+//                {{1, 1, 0}, {0, 1, 1}},     // Z
+//                {{1, 1, 1}, {0, 1, 0}},     // T
+//                {{1, 1}, {1, 1}},           // Box
+//                {{0, 1}, {0, 1}, {1, 1}},   // Reverse L
+//                {{0, 1, 1}, {1, 1, 0}}      // Reverse Z
+//        };
+//
+//        public String[] shapeNames = {
+//                "L",                // L
+//                "Straight Line",    // Straight Line
+//                "Z",                // Z
+//                "T",                // T
+//                "Box",              // Box
+//                "Reverse L",        // Reverse L
+//                "Reverse Z"         // Reverse Z
+//        };
+//
+//        public int[][] currentShape;
 
 
     public GameBoard(int noOfColumns, GameScreen gameScreen) {
@@ -65,12 +68,13 @@ public class GameBoard extends JPanel {
         noOfRows = boardHeight / blockSize;
         settledBlocks = new Color[noOfRows][noOfColumns];
         createdNewBlockWithColor = createNewBlock();
+        initialLevel = gameSettings.getGameLevel();
+        currentLevel = initialLevel;
 //        System.out.println("(Game Board) New Block Created. ");
     }
 
     public void initializeThread(DelayClass thread) {
         this.threadClass = thread;
-
         if(gameSettings.isGameMusicOn())
         // music playing background one
         {
@@ -147,7 +151,7 @@ public class GameBoard extends JPanel {
             if(linesErased %10 == 0){
                 currentLevel++;
                 gameScreen.updateLevel(currentLevel);
-                System.out.println("Level up! Current level: " + currentLevel);
+                System.out.println("Current level: " + currentLevel);
 
             }
         }
@@ -186,18 +190,25 @@ public class GameBoard extends JPanel {
     }
 
 
+//        public Color createNewBlock() {
+//            Random r = new Random();
+//            int randomNumber = r.nextInt(shapes.length);
+//
+//            currentShape = shapes[randomNumber];
+//            newBlockColorSelectedAtRandom = blockColors[r.nextInt(blockColors.length)];
+//            System.out.println("New Shape: " + newBlockColorSelectedAtRandom.toString() + " " + this.shapeNames[randomNumber]);
+//
+//            gameBlock = new GameBlock(currentShape, newBlockColorSelectedAtRandom);
+//            blockXGridInitialPosition = 9;
+//            blockYGridInitialPosition = -gameBlock.getBlockShape().length;
+//            return newBlockColorSelectedAtRandom;
+//        }
     public Color createNewBlock() {
-        Random r = new Random();
-        int randomNumber = r.nextInt(shapes.length);
-
-        currentShape = shapes[randomNumber];
-        newBlockColorSelectedAtRandom = blockColors[r.nextInt(blockColors.length)];
-//        System.out.println("New Shape: " + newBlockColorSelectedAtRandom.toString() + " " + this.shapeNames[randomNumber]);
-
-        gameBlock = new GameBlock(currentShape, newBlockColorSelectedAtRandom);
-        blockXGridInitialPosition = 9;
+        BlockFactory blockFactory = BlockFactoryProducer.getRandomBlock();
+        gameBlock = blockFactory.createBlock(); // Use factory to create the block
+        blockXGridInitialPosition = 9;  // Reset block's initial position
         blockYGridInitialPosition = -gameBlock.getBlockShape().length;
-        return newBlockColorSelectedAtRandom;
+        return gameBlock.getBlockColor();
     }
 
 
