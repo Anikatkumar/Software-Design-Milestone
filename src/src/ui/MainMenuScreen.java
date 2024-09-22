@@ -58,7 +58,9 @@ public class MainMenuScreen extends JFrame{
         configButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new ConfigurationScreen();
+                ConfigurationScreen.getInstance().setVisible(true); // Get the Singleton instance
+
+                //new ConfigurationScreen();
                 dispose();
             }
         });

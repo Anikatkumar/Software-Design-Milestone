@@ -11,6 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ConfigurationScreen extends JFrame {
+
+    private static ConfigurationScreen instance; // Singleton instance
+
     private boolean aiModeOn;
     private int fieldWidth;
     private int fieldHeight;
@@ -21,13 +24,9 @@ public class ConfigurationScreen extends JFrame {
     int minLevel = 1;
     int maxLevel = 10;
 
-    public ConfigurationScreen() {
-
-//        System.out.println("Constructor Call: ");
-
-
+    // Private constructor for Singleton pattern
+    private ConfigurationScreen() {
         // READING SETTINGS FROM CONFIGURATION FILE
-        // PRE SAVED SETTINGS MEAN DEFAULT ONES
         GameSettings savedGameSettings = new GameSettings();
         savedGameSettings = savedGameSettings.readSettingsFromJsonFile();
         System.out.println("savedGameSettings: " + savedGameSettings);
@@ -39,22 +38,51 @@ public class ConfigurationScreen extends JFrame {
         gameSoundsOn = savedGameSettings.isGameSoundsOn();
         extendModeOn = savedGameSettings.isExtendModeOn();
 
+        // Initialize the configuration screen UI components
+        initializeUI(savedGameSettings);
+    }
 
+    // Public static method to get the singleton instance
+    public static synchronized ConfigurationScreen getInstance() {
+        if (instance == null) {
+            instance = new ConfigurationScreen();  // Create instance if it doesn't exist
+        }
+        return instance;
+    }
 
-        JFrame frame = new JFrame("Configurations");
-        frame.setSize(750, 550);
+    // UI Initialization logic
+    private void initializeUI(GameSettings savedGameSettings) {
+        JFrame frame = this;  // Use 'this' instead of creating a new JFrame
+        frame.setSize(750, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
-        //frame.setLayout(new BorderLayout());
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(new EmptyBorder(50, 60, 50, 0));
 
+        JPanel configurationPanel = setupConfigurationPanel(savedGameSettings);
+        mainPanel.add(configurationPanel);
 
+        JPanel buttonPanel = getButtonPanel(this);
+
+        JLabel titleLabel = new JLabel("Configurations", JLabel.CENTER);
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 35));
+        titleLabel.setOpaque(true);
+        titleLabel.setForeground(Color.BLACK);
+
+        frame.add(titleLabel, BorderLayout.NORTH);
+        frame.add(mainPanel, BorderLayout.CENTER);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+
+        frame.setVisible(true);
+    }
+
+    private JPanel setupConfigurationPanel(GameSettings savedGameSettings) {
         JPanel configurationPanel = new JPanel();
         configurationPanel.setLayout(new GridLayout(8, 3, 5, 5));
 
+        // Field Width Slider
         JLabel fieldWidthLabel = new JLabel("Field Width (No of cells):");
         JSlider fieldWidthSlider = new JSlider(5, 15, fieldWidth);
         fieldWidthSlider.setMajorTickSpacing(1);
@@ -67,10 +95,11 @@ public class ConfigurationScreen extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 fieldWidth = fieldWidthSlider.getValue();
                 fieldWidthValueLabel.setText(String.valueOf(fieldWidthSlider.getValue()));
-                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , initialGameLevel);
-
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
             }
         });
+
+        // Field Height Slider
         JLabel fieldHeightLabel = new JLabel("Field Height (No of cells):");
         JSlider fieldHeightSlider = new JSlider(15, 30, fieldHeight);
         fieldHeightSlider.setMajorTickSpacing(1);
@@ -83,11 +112,11 @@ public class ConfigurationScreen extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 fieldHeight = fieldHeightSlider.getValue();
                 fieldHeightValueLabel.setText(String.valueOf(fieldHeightSlider.getValue()));
-                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , initialGameLevel);
-
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
             }
         });
 
+        // Game Level Slider
         if (initialGameLevel < minLevel || initialGameLevel > maxLevel) {
             System.out.println("Invalid initial level from JSON: " + initialGameLevel);
             initialGameLevel = 1;  // Set to a default valid value if out of range
@@ -104,10 +133,11 @@ public class ConfigurationScreen extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 initialGameLevel = gameLevelSlider.getValue();
                 gameLevelValueLabel.setText(String.valueOf(gameLevelSlider.getValue()));
-                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , initialGameLevel);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
             }
         });
 
+        // Other components
         JCheckBox musicCheckbox = new JCheckBox("Music (On|Off):");
         musicCheckbox.setSelected(savedGameSettings.isGameMusicOn());
         JLabel musicStatusLabel = new JLabel(savedGameSettings.isGameMusicOn() ? "On" : "Off");
@@ -116,18 +146,15 @@ public class ConfigurationScreen extends JFrame {
         soundEffectCheckbox.setSelected(savedGameSettings.isGameSoundsOn());
         JLabel soundEffectStatusLabel = new JLabel(savedGameSettings.isGameSoundsOn() ? "On" : "Off");
 
-
         JCheckBox aiPlayCheckbox = new JCheckBox("AI Play (On|Off):");
         aiPlayCheckbox.setSelected(savedGameSettings.getAiModeOn());
         JLabel aiPlayStatusLabel = new JLabel(savedGameSettings.getAiModeOn() ? "On" : "Off");
-        configurationPanel.add(aiPlayCheckbox);
-        configurationPanel.add(aiPlayStatusLabel);
-
 
         JCheckBox extendModeCheckbox = new JCheckBox("Extend Mode (On|Off):");
         extendModeCheckbox.setSelected(savedGameSettings.isExtendModeOn());
         JLabel extendModeStatusLabel = new JLabel(savedGameSettings.isExtendModeOn() ? "On" : "Off");
 
+        // Add components to the panel
         configurationPanel.add(fieldWidthLabel);
         configurationPanel.add(fieldWidthSlider);
         configurationPanel.add(fieldWidthValueLabel);
@@ -144,9 +171,9 @@ public class ConfigurationScreen extends JFrame {
         configurationPanel.add(musicStatusLabel);
         musicCheckbox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                musicStatusLabel.setText((musicCheckbox.isSelected() ? "On" : "Off"));
+                musicStatusLabel.setText(musicCheckbox.isSelected() ? "On" : "Off");
                 gameMusicOn = musicCheckbox.isSelected();
-                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , initialGameLevel);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
             }
         });
         configurationPanel.add(new JLabel());
@@ -155,59 +182,39 @@ public class ConfigurationScreen extends JFrame {
         configurationPanel.add(soundEffectStatusLabel);
         soundEffectCheckbox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                soundEffectStatusLabel.setText((soundEffectCheckbox.isSelected() ? "On" : "Off"));
+                soundEffectStatusLabel.setText(soundEffectCheckbox.isSelected() ? "On" : "Off");
                 gameSoundsOn = soundEffectCheckbox.isSelected();
-                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , initialGameLevel);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
             }
         });
         configurationPanel.add(new JLabel());
-
 
         // Removed. For Milestone 2
         configurationPanel.add(aiPlayCheckbox);
         configurationPanel.add(aiPlayStatusLabel);
         aiPlayCheckbox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                aiPlayStatusLabel.setText((aiPlayCheckbox.isSelected() ? "On" : "Off"));
+                aiPlayStatusLabel.setText(aiPlayCheckbox.isSelected() ? "On" : "Off");
                 aiModeOn = aiPlayCheckbox.isSelected();
-                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , initialGameLevel);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
             }
         });
         configurationPanel.add(new JLabel());
-
 
         configurationPanel.add(extendModeCheckbox);
         configurationPanel.add(extendModeStatusLabel);
         extendModeCheckbox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                extendModeStatusLabel.setText((extendModeCheckbox.isSelected() ? "On" : "Off"));
+                extendModeStatusLabel.setText(extendModeCheckbox.isSelected() ? "On" : "Off");
                 extendModeOn = extendModeCheckbox.isSelected();
-                saveSettings(fieldWidth , fieldHeight , aiModeOn , extendModeOn , gameMusicOn , gameSoundsOn , initialGameLevel);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
             }
         });
-        //configurationPanel.add(new JLabel());
-        mainPanel.add(configurationPanel);
 
-        JPanel buttonPanel = getButtonPanel(frame);
-
-        JLabel titleLabel = new JLabel("Configurations", JLabel.CENTER);
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 35));
-        titleLabel.setOpaque(true);
-        titleLabel.setForeground(Color.BLACK);
-        //mainPanel.add(backButton, BorderLayout.NORTH);
-
-        frame.add(titleLabel, BorderLayout.NORTH);
-        frame.add(mainPanel, BorderLayout.CENTER);
-        frame.add(buttonPanel, BorderLayout.SOUTH);
-
-        frame.setVisible(true);
-
-
+        return configurationPanel;
     }
 
-
     public void saveSettings(int width, int height, boolean aiMode, boolean extendMode, boolean musicOn, boolean soundOn, int gameLevel) {
-//        System.out.println("Save Settings Called From Config Screen to update settings.");
         GameSettings newGameSettings = new GameSettings();
         newGameSettings.setFieldWidth(width);
         newGameSettings.setFieldHeight(height);
@@ -227,7 +234,7 @@ public class ConfigurationScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 new MainMenuScreen().showMainScreen();
                 frame.dispose();
-            }
+            } // Static call to show the main screen
         });
         backButton.setBackground(Color.lightGray);
         backButton.setOpaque(true);
@@ -239,4 +246,3 @@ public class ConfigurationScreen extends JFrame {
         return buttonPanel;
     }
 }
-
