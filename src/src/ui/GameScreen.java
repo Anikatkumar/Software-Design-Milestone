@@ -201,9 +201,6 @@ public class GameScreen extends JFrame {
         keyActionMap.put("down", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (gameSettings.isGameSoundsOn()) {
-                    GameBlock.playMoveTurnMusic();
-                }
                 gameBoard.moveBlockDownFast();
             }
         });
