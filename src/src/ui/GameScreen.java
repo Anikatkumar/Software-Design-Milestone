@@ -23,14 +23,6 @@ public class GameScreen extends JFrame {
         System.out.println("GAME SCREEN DISPLAY");
         gameSettings = gameSettings.readSettingsFromJsonFile();
         gameBoard = new GameBoard(20, this);
-//        playLabel = new PlayLabel();    // Play Label in the Middle of the Play Screen
-
-        // Play Label
-//        playLabel = new JLabel("Tetris Play", JLabel.CENTER);
-//        playLabel.setOpaque(true);
-//        playLabel.setForeground(Color.BLACK);
-//        playLabel.setFont(new Font("SansSerif", Font.BOLD, 30));
-//        playLabel.setVisible(true);
 
         // Pause Label
         pauseLabel = new JLabel("Press 'P' again to resume the game   ", JLabel.RIGHT);
@@ -59,7 +51,6 @@ public class GameScreen extends JFrame {
 
         //Does not add this label to the frame but to the panel (Game Board)
         gameBoard.add(pauseLabel);
-
 
         threadClass = new DelayClass(gameBoard, this);
         System.out.println("(GameScreen) NEW threadClass started.");
