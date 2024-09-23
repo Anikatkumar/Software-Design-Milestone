@@ -22,33 +22,20 @@ public class GameScreen extends JFrame {
     public GameScreen() {
         System.out.println("GAME SCREEN DISPLAY");
         gameSettings = gameSettings.readSettingsFromJsonFile();
-        gameBoard = new GameBoard(20, this);
+        gameBoard = new GameBoard(this);
 
         // Pause Label
         pauseLabel = new JLabel("Press 'P' again to resume the game   ", JLabel.RIGHT);
         pauseLabel.setVisible(false);
         pauseLabel.setFont(new Font("Arial", Font.ITALIC, 10));  // Customize font size and style
 
-        this.setLayout(new BorderLayout());
-        JPanel playPanel = createPlayLabelPanel();
+        JPanel titlePanel = createTitlePanel();
         JPanel infoPanel = createInfoPanel();
-        this.add(playPanel, BorderLayout.NORTH);
+
+        this.setLayout(new BorderLayout());
+        this.add(titlePanel, BorderLayout.NORTH);
         this.add(infoPanel, BorderLayout.WEST);
-
         this.add(gameBoard, BorderLayout.CENTER);
-        //gameBoard.setPreferredSize(new Dimension(300, 350));
-
-        //JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, infoPanel, gameBoard);
-        //splitPane.setPreferredSize(new Dimension(totalWidth, 390));  // Set total width and height
-
-        // Set the proportion (40% for info panel, 60% for game board)
-        //splitPane.setResizeWeight(0.4);
-
-        // Optional: remove the divider
-        //splitPane.setDividerSize(0);
-        //this.add(splitPane, BorderLayout.CENTER);
-
-
         //Does not add this label to the frame but to the panel (Game Board)
         gameBoard.add(pauseLabel);
 
@@ -62,23 +49,13 @@ public class GameScreen extends JFrame {
         backButton = new BackButton(this, threadClass, this);
         this.add(backButton, BorderLayout.SOUTH);
 
-        //scoreLabel = new JLabel("Score: 0", JLabel.LEFT);
-
-        //levelLabel = new JLabel("Level: 1", JLabel.LEFT);
-
-        //add(scoreLabel, BorderLayout.WEST);
-        //add(levelLabel, BorderLayout.BEFORE_FIRST_LINE);
-        //scoreLabel.setVisible(true);
-        //levelLabel.setVisible(true);
-
         gameKeyboardControls();
-        //this.setPreferredSize(new Dimension(300, 350));
 
         this.pack();
         this.setVisible(true);
     }
 
-    private JPanel createPlayLabelPanel() {
+    private JPanel createTitlePanel() {
         JPanel playPanel = new JPanel();
         playPanel.setLayout(new GridLayout(2, 1));
 

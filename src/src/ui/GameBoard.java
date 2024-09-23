@@ -6,14 +6,15 @@ import settings.GameSettings;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Random;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 import static java.lang.Math.abs;
 
 public class GameBoard extends JPanel {
     private final int noOfRows;
     private final int noOfColumns;
-    private final int blockSize;
+    private int blockSize;
     private GameBlock gameBlock;
     private JLabel playLabel = new JLabel("Play");
     int xAxis;
@@ -26,7 +27,7 @@ public class GameBoard extends JPanel {
     private Color[] blockColors = {Color.CYAN, Color.GREEN, Color.ORANGE, Color.yellow, Color.red, Color.GRAY, Color.pink};
     private Color newBlockColorSelectedAtRandom;
     Color createdNewBlockWithColor;
-    private int score=0;
+    private int score = 0;
     private int initialLevel;
     private int currentLevel;
     private int linesErased = 0;
@@ -55,27 +56,82 @@ public class GameBoard extends JPanel {
 //        public int[][] currentShape;
 
 
-    public GameBoard(int noOfColumns, GameScreen gameScreen) {
-        this.gameScreen = gameScreen;
-        gameSettings = gameSettings.readSettingsFromJsonFile();
-        this.noOfColumns = noOfColumns;
-        int boardHeight = 390;
-        int boardWidth = 300;
-        this.setBounds(150, 60, boardWidth, boardHeight);
-        this.setBackground(Color.white);
-        this.setBorder(BorderFactory.createLineBorder(Color.black));
-        blockSize = (boardWidth / noOfColumns);
-        noOfRows = boardHeight / blockSize;
-        settledBlocks = new Color[noOfRows][noOfColumns];
-        createdNewBlockWithColor = createNewBlock();
-        initialLevel = gameSettings.getGameLevel();
-        currentLevel = initialLevel;
+    public GameBoard(GameScreen gameScreen) {
+//        this.gameScreen = gameScreen;
+//        gameSettings = gameSettings.readSettingsFromJsonFile();
+//        this.noOfColumns = noOfColumns;
+//        int boardHeight = 390;
+//        int boardWidth = 300;
+//        this.setBounds(150, 60, boardWidth, boardHeight);
+//        this.setBackground(Color.white);
+//        this.setBorder(BorderFactory.createLineBorder(Color.black));
+//        blockSize = (boardWidth / noOfColumns);
+//        noOfRows = boardHeight / blockSize;
+//        settledBlocks = new Color[noOfRows][noOfColumns];
+//        createdNewBlockWithColor = createNewBlock();
+//        initialLevel = gameSettings.getGameLevel();
+//        currentLevel = initialLevel;
 //        System.out.println("(Game Board) New Block Created. ");
+        this.gameScreen = gameScreen;
+
+        // Read settings from JSON or other source
+        gameSettings = new GameSettings().readSettingsFromJsonFile();
+
+        // Initialize number of columns and rows from GameSettings
+        this.noOfColumns = gameSettings.getFieldWidth();
+        this.noOfRows = gameSettings.getFieldHeight();      // Determine the number of rows from GameSettings
+
+        // Initial size of the panel (the height will adjust dynamically)
+        int boardWidth = 300;
+        this.setBounds(150, 60, boardWidth, 390); // Initial height will be set dynamically
+
+        // Initial size of the panel (the height will adjust dynamically)
+        this.setBackground(Color.white);
+        this.setBorder(BorderFactory.createLineBorder(Color.red));
+
+        // Calculate the block size based on the number of columns
+        blockSize = boardWidth / noOfColumns;
+
+        // Initialized. Stores the blocks that have settled.
+        settledBlocks = new Color[noOfRows][noOfColumns];
+
+        // Add component listener to detect resizing
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                // Adjust block size based on new panel size, but keep noOfRows from gameSettings
+                adjustBoardSize();
+            }
+        });
+
+        // Create a new block when the game board is initialized
+        createdNewBlockWithColor = createNewBlock();
+    }
+
+    /**
+     * Adjust block size when the panel is resized but keep the number of rows static according to gameSettings
+     */
+    private void adjustBoardSize() {
+        // Get current width and height of the panel
+        int newWidth = getWidth();
+        int newHeight = getHeight();
+
+        // Calculate new block size based on the smaller dimension
+        blockSize = Math.min(newWidth / noOfColumns, newHeight / noOfRows);
+
+        // Recalculate the preferred size of the panel based on the block size and number of rows/columns
+        int preferredWidth = blockSize * noOfColumns;
+        int preferredHeight = blockSize * noOfRows;
+        this.setPreferredSize(new Dimension(preferredWidth, preferredHeight));
+
+        // Repaint the panel with the updated sizes
+        revalidate();  // Ensure the layout is refreshed
+        repaint();
     }
 
     public void initializeThread(DelayClass thread) {
         this.threadClass = thread;
-        if(gameSettings.isGameMusicOn())
+        if (gameSettings.isGameMusicOn())
         // music playing background one
         {
             GameBlock.playBackGroundMusic();
@@ -121,7 +177,7 @@ public class GameBoard extends JPanel {
                 }
             }
             if (flag) {
-                rowsErased ++;
+                rowsErased++;
                 clearOneCompletedLine(i);
                 moveBackgroundLinesDown(i);
                 clearOneCompletedLine(0);
@@ -137,7 +193,7 @@ public class GameBoard extends JPanel {
 
         if (rowsErased > 0) {
             // line erase sound
-            if(gameSettings.isGameSoundsOn()) {
+            if (gameSettings.isGameSoundsOn()) {
                 GameBlock.playEraseLineMusic();
             }
             updateScoreOnRowsCleared(rowsErased);
@@ -148,7 +204,7 @@ public class GameBoard extends JPanel {
             gameScreen.updateLinesErased(linesErased);
 
 
-            if(linesErased %10 == 0){
+            if (linesErased % 10 == 0) {
                 currentLevel++;
                 gameScreen.updateLevel(currentLevel);
                 System.out.println("Current level: " + currentLevel);
@@ -164,6 +220,7 @@ public class GameBoard extends JPanel {
             settledBlocks[rowNumber][k] = null; // clear line
         }
     }
+
     void updateScoreOnRowsCleared(int rowsErased) {
         if (rowsErased == 1) {
             score += 100;
@@ -190,7 +247,7 @@ public class GameBoard extends JPanel {
     }
 
 
-//        public Color createNewBlock() {
+    //        public Color createNewBlock() {
 //            Random r = new Random();
 //            int randomNumber = r.nextInt(shapes.length);
 //
@@ -206,7 +263,7 @@ public class GameBoard extends JPanel {
     public Color createNewBlock() {
         BlockFactory blockFactory = BlockFactoryProducer.getRandomBlock();
         gameBlock = blockFactory.createBlock(); // Use factory to create the block
-        blockXGridInitialPosition = 9;  // Reset block's initial position
+        blockXGridInitialPosition = noOfColumns / 2;  // Reset block's initial position
         blockYGridInitialPosition = -gameBlock.getBlockShape().length;
         return gameBlock.getBlockColor();
     }
