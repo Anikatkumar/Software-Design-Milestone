@@ -5,12 +5,8 @@ import settings.GameSettings;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import static java.lang.Math.abs;
 
 public class DelayClass extends Thread {
     private GameBoard gameBoard;
@@ -105,7 +101,7 @@ public class DelayClass extends Thread {
 
     public void increaseBlockSpeed(int gameLevel) {
         speedBlock = 1100 - (gameLevel * 100);
-        System.out.println("Level: " + gameLevel + "speed block: " + speedBlock);
+        System.out.println("Level: " + gameLevel + " Speed Block: " + speedBlock);
     }
 
     public void pauseGame() {
@@ -158,11 +154,12 @@ public class DelayClass extends Thread {
 
     }
 
-    public void backButtonExitTriggered(){
+    public void backButtonExitTriggered() {
         System.out.println("Back Button Exit Triggered.");
         score = gameBoard.score;
         checkIfTopTen(score);
     }
+
     public static String askPlayerName() {
         String playerName = JOptionPane.showInputDialog(null,
                 "Enter your name:",
