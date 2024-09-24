@@ -34,11 +34,24 @@ public class GameScreen extends JFrame {
 
         this.setLayout(new BorderLayout());
         this.add(titlePanel, BorderLayout.NORTH);
-        this.add(infoPanel, BorderLayout.WEST);
-        this.add(gameBoard, BorderLayout.CENTER);
-        //Does not add this label to the frame but to the panel (Game Board)
-        gameBoard.add(pauseLabel);
 
+        // To display Info Panel and Game Board Panel Side by Side
+        JPanel centerPanel = new JPanel();
+//        centerPanel.setBackground(Color.blue);
+        centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+
+        JPanel containerPanel = new JPanel();
+        containerPanel.setLayout(new GridLayout(0, 2));
+        containerPanel.setBackground(Color.magenta);
+        containerPanel.add(infoPanel);
+
+        gameBoard.setPreferredSize(new Dimension(500, getHeight()));
+
+        containerPanel.add(gameBoard);
+        centerPanel.add(containerPanel);
+        this.add(centerPanel, BorderLayout.CENTER);
+        gameBoard.add(pauseLabel);
+        
         threadClass = new DelayClass(gameBoard, this);
         System.out.println("(GameScreen) NEW threadClass started.");
         System.out.println(threadClass.getName());

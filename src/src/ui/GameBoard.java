@@ -57,21 +57,6 @@ public class GameBoard extends JPanel {
 
 
     public GameBoard(GameScreen gameScreen) {
-//        this.gameScreen = gameScreen;
-//        gameSettings = gameSettings.readSettingsFromJsonFile();
-//        this.noOfColumns = noOfColumns;
-//        int boardHeight = 390;
-//        int boardWidth = 300;
-//        this.setBounds(150, 60, boardWidth, boardHeight);
-//        this.setBackground(Color.white);
-//        this.setBorder(BorderFactory.createLineBorder(Color.black));
-//        blockSize = (boardWidth / noOfColumns);
-//        noOfRows = boardHeight / blockSize;
-//        settledBlocks = new Color[noOfRows][noOfColumns];
-//        createdNewBlockWithColor = createNewBlock();
-//        initialLevel = gameSettings.getGameLevel();
-//        currentLevel = initialLevel;
-//        System.out.println("(Game Board) New Block Created. ");
         this.gameScreen = gameScreen;
 
         // Read settings from JSON or other source
@@ -81,16 +66,20 @@ public class GameBoard extends JPanel {
         this.noOfColumns = gameSettings.getFieldWidth();
         this.noOfRows = gameSettings.getFieldHeight();      // Determine the number of rows from GameSettings
 
-        // Initial size of the panel (the height will adjust dynamically)
-        int boardWidth = 300;
-        this.setBounds(150, 60, boardWidth, 390); // Initial height will be set dynamically
+        // Calculate the block size based on the frame size (parent container)
+        Dimension frameSize = gameScreen.getSize();
+        blockSize = Math.min((int) frameSize.getWidth() / noOfColumns, (int) frameSize.getHeight() / noOfRows);
+
+        // Set preferred size based on block size, number of rows, and columns
+        int preferredWidth = blockSize * noOfColumns;
+        int preferredHeight = blockSize * noOfRows;
+        this.setPreferredSize(new Dimension(preferredWidth, preferredHeight));
+        this.setMaximumSize(new Dimension(preferredWidth, preferredHeight));  // Prevent stretching beyond the calculated size
+        this.setMinimumSize(new Dimension(preferredWidth, preferredHeight));  // Prevent shrinking below this size
 
         // Initial size of the panel (the height will adjust dynamically)
         this.setBackground(Color.white);
-        this.setBorder(BorderFactory.createLineBorder(Color.red));
-
-        // Calculate the block size based on the number of columns
-        blockSize = boardWidth / noOfColumns;
+        this.setBorder(BorderFactory.createLineBorder(Color.black));
 
         // Initialized. Stores the blocks that have settled.
         settledBlocks = new Color[noOfRows][noOfColumns];
