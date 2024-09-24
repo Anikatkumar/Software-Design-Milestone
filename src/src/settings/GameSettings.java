@@ -15,6 +15,8 @@ public class GameSettings {
     private boolean gameMusicOn;
     private boolean gameSoundsOn;
     private boolean extendModeOn;
+    private String playerOneType;
+    private String playerTwoType;
 
     public boolean getAiModeOn() {
         return aiModeOn;
@@ -72,6 +74,21 @@ public class GameSettings {
         this.extendModeOn = extendModeOn;
     }
 
+    public String getPlayerOneType() {
+        return playerOneType;
+    }
+
+    public void setPlayerOneType(String playerOne) {
+        this.playerOneType = playerOne;
+    }
+
+    public String getPlayerTwoType() {
+        return playerTwoType;
+    }
+
+    public void setPlayerTwoType(String playerTwo) {
+        this.playerTwoType = playerTwo;
+    }
 
     public void writeSettingsIntoJsonFile(GameSettings settings) {
         /*
@@ -111,6 +128,8 @@ public class GameSettings {
                 ", gameMusicOn=" + gameMusicOn +
                 ", gameSoundsOn=" + gameSoundsOn +
                 ", extendModeOn=" + extendModeOn +
+                ", playerOneType='" + playerOneType + '\'' +
+                ", playerTwoType='" + playerTwoType + '\'' +
                 '}';
     }
 
