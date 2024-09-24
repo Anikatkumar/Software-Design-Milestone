@@ -1,4 +1,4 @@
-package ui;
+ package ui;
 
 import settings.GameSettings;
 
@@ -23,6 +23,8 @@ public class ConfigurationScreen extends JFrame {
     private boolean extendModeOn;
     int minLevel = 1;
     int maxLevel = 10;
+    private String playerOneType;
+    private String playerTwoType;
     // Player Mode variables
     private JRadioButton playerOneHuman, playerOneAI, playerOneExternal;
     private JRadioButton playerTwoHuman, playerTwoAI, playerTwoExternal;
@@ -40,7 +42,8 @@ public class ConfigurationScreen extends JFrame {
         gameMusicOn = savedGameSettings.isGameMusicOn();
         gameSoundsOn = savedGameSettings.isGameSoundsOn();
         extendModeOn = savedGameSettings.isExtendModeOn();
-
+        playerOneType = savedGameSettings.getPlayerOneType() != null ? savedGameSettings.getPlayerOneType() : "Human";
+        playerTwoType = savedGameSettings.getPlayerTwoType() != null ? savedGameSettings.getPlayerTwoType() : "Human";
         // Initialize the configuration screen UI components
         initializeUI(savedGameSettings);
     }
@@ -98,7 +101,9 @@ public class ConfigurationScreen extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 fieldWidth = fieldWidthSlider.getValue();
                 fieldWidthValueLabel.setText(String.valueOf(fieldWidthSlider.getValue()));
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType, playerTwoType);
+                //saveSettings();
+
             }
         });
 
@@ -115,7 +120,7 @@ public class ConfigurationScreen extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 fieldHeight = fieldHeightSlider.getValue();
                 fieldHeightValueLabel.setText(String.valueOf(fieldHeightSlider.getValue()));
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType,playerTwoType);
             }
         });
 
@@ -132,7 +137,7 @@ public class ConfigurationScreen extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 initialGameLevel = gameLevelSlider.getValue();
                 gameLevelValueLabel.setText(String.valueOf(gameLevelSlider.getValue()));
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType,playerTwoType);
             }
         });
 
@@ -158,9 +163,9 @@ public class ConfigurationScreen extends JFrame {
 
         // Player One Type
         JLabel playerOneLabel = new JLabel("Player One Type:");
-        playerOneHuman = new JRadioButton("Human", true);
-        playerOneAI = new JRadioButton("AI");
-        playerOneExternal = new JRadioButton("External");
+        playerOneHuman = new JRadioButton("Human", playerOneType.equals("Human"));
+        playerOneAI = new JRadioButton("AI",playerOneType.equals("AI"));
+        playerOneExternal = new JRadioButton("External",playerOneType.equals("External"));
 
         ButtonGroup playerOneGroup = new ButtonGroup();
         playerOneGroup.add(playerOneHuman);
@@ -174,9 +179,9 @@ public class ConfigurationScreen extends JFrame {
 
         // Player Two Type
         JLabel playerTwoLabel = new JLabel("Player Two Type:");
-        playerTwoHuman = new JRadioButton("Human", true);
-        playerTwoAI = new JRadioButton("AI");
-        playerTwoExternal = new JRadioButton("External");
+        playerTwoHuman = new JRadioButton("Human", playerOneType.equals("Human"));
+        playerTwoAI = new JRadioButton("AI",playerOneType.equals("AI"));
+        playerTwoExternal = new JRadioButton("External",playerOneType.equals("External"));
 
         ButtonGroup playerTwoGroup = new ButtonGroup();
         playerTwoGroup.add(playerTwoHuman);
@@ -207,7 +212,7 @@ public class ConfigurationScreen extends JFrame {
                     playerTwoExternal.setSelected(false);
                 }
 
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType,playerTwoType);
             }
         });
 
@@ -230,12 +235,7 @@ public class ConfigurationScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 musicStatusLabel.setText(musicCheckbox.isSelected() ? "On" : "Off");
                 gameMusicOn = musicCheckbox.isSelected();
-                if (gameMusicOn) {
-                    GameBlock.playBackGroundMusic();
-                } else {
-                    GameBlock.pauseBackGroundMusic();
-                }
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType,playerTwoType);
             }
         });
         configurationPanel.add(new JLabel());
@@ -246,7 +246,7 @@ public class ConfigurationScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 soundEffectStatusLabel.setText(soundEffectCheckbox.isSelected() ? "On" : "Off");
                 gameSoundsOn = soundEffectCheckbox.isSelected();
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType,playerTwoType);
             }
         });
         configurationPanel.add(new JLabel());
@@ -258,7 +258,7 @@ public class ConfigurationScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 aiPlayStatusLabel.setText(aiPlayCheckbox.isSelected() ? "On" : "Off");
                 aiModeOn = aiPlayCheckbox.isSelected();
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType,playerTwoType);
             }
         });
         configurationPanel.add(new JLabel());
@@ -269,7 +269,7 @@ public class ConfigurationScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 extendModeStatusLabel.setText(extendModeCheckbox.isSelected() ? "On" : "Off");
                 extendModeOn = extendModeCheckbox.isSelected();
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType,playerTwoType);
             }
         });
 
@@ -286,7 +286,7 @@ public class ConfigurationScreen extends JFrame {
         return configurationPanel;
     }
 
-    public void saveSettings(int width, int height, boolean aiMode, boolean extendMode, boolean musicOn, boolean soundOn, int gameLevel) {
+    public void saveSettings(int width, int height, boolean aiMode, boolean extendMode, boolean musicOn, boolean soundOn, int gameLevel, String playerOneType, String playerTwoType) {
         GameSettings newGameSettings = new GameSettings();
         newGameSettings.setFieldWidth(width);
         newGameSettings.setFieldHeight(height);
@@ -295,6 +295,21 @@ public class ConfigurationScreen extends JFrame {
         newGameSettings.setAiModeOn(aiMode);
         newGameSettings.setExtendModeOn(extendMode);
         newGameSettings.setGameLevel(gameLevel);
+        if (playerOneHuman.isSelected()) {
+            newGameSettings.setPlayerOneType("Human");
+        } else if (playerOneAI.isSelected()) {
+            newGameSettings.setPlayerOneType("AI");
+        } else {
+            newGameSettings.setPlayerOneType("External");
+        }
+
+        if (playerTwoHuman.isSelected()) {
+            newGameSettings.setPlayerTwoType("Human");
+        } else if (playerTwoAI.isSelected()) {
+            newGameSettings.setPlayerTwoType("AI");
+        } else {
+            newGameSettings.setPlayerTwoType("External");
+        }
         newGameSettings.writeSettingsIntoJsonFile(newGameSettings);
         //extendModeOn = false; // Force it to true by default
         System.out.println("New Settings: " + newGameSettings.toString());
