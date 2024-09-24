@@ -5,7 +5,6 @@ import settings.GameSettings;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class GameScreen extends JFrame {
     private JPanel GameBoard;
@@ -17,43 +16,45 @@ public class GameScreen extends JFrame {
     private JLabel currentLevelLabel;
     private JLabel linesErasedLabel = new JLabel("Lines Erased: 0", JLabel.CENTER);
     private DelayClass threadClass;
-    private PlayLabel playLabel;
     GameSettings gameSettings = new GameSettings();
 
 
     public GameScreen() {
-//        System.out.println("GAME SCREEN DISPLAY");
+        System.out.println("GAME SCREEN DISPLAY");
         gameSettings = gameSettings.readSettingsFromJsonFile();
-        gameBoard = new GameBoard(20,this);
-        playLabel = new PlayLabel();    // Play Label in the Middle of the Play Screen
+        gameBoard = new GameBoard(this);
+
+        // Pause Label
         pauseLabel = new JLabel("Press 'P' again to resume the game   ", JLabel.RIGHT);
         pauseLabel.setVisible(false);
         pauseLabel.setFont(new Font("Arial", Font.ITALIC, 10));  // Customize font size and style
 
-        this.setLayout(new BorderLayout());
+        JPanel titlePanel = createTitlePanel();
         JPanel infoPanel = createInfoPanel();
-        this.add(infoPanel, BorderLayout.WEST);
-        this.add(gameBoard, BorderLayout.CENTER);
-        //gameBoard.setPreferredSize(new Dimension(300, 350));
 
-        //JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, infoPanel, gameBoard);
-        //splitPane.setPreferredSize(new Dimension(totalWidth, 390));  // Set total width and height
+        this.setLayout(new BorderLayout());
+        this.add(titlePanel, BorderLayout.NORTH);
 
-        // Set the proportion (40% for info panel, 60% for game board)
-        //splitPane.setResizeWeight(0.4);
+        // To display Info Panel and Game Board Panel Side by Side
+        JPanel centerPanel = new JPanel();
+//        centerPanel.setBackground(Color.blue);
+        centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
-        // Optional: remove the divider
-       //splitPane.setDividerSize(0);
-       //this.add(splitPane, BorderLayout.CENTER);
-        this.add(playLabel);
+        JPanel containerPanel = new JPanel();
+        containerPanel.setLayout(new GridLayout(0, 2));
+        containerPanel.setBackground(Color.magenta);
+        containerPanel.add(infoPanel);
 
+        gameBoard.setPreferredSize(new Dimension(500, getHeight()));
 
-        //Does not add this label to the frame but to the panel (Game Board)
+        containerPanel.add(gameBoard);
+        centerPanel.add(containerPanel);
+        this.add(centerPanel, BorderLayout.CENTER);
         gameBoard.add(pauseLabel);
-
-
+        
         threadClass = new DelayClass(gameBoard, this);
-//        System.out.println("(GameScreen) NEW threadClass started.");
+        System.out.println("(GameScreen) NEW threadClass started.");
+        System.out.println(threadClass.getName());
         threadClass.start();
 
         gameBoard.initializeThread(threadClass);
@@ -61,37 +62,45 @@ public class GameScreen extends JFrame {
         backButton = new BackButton(this, threadClass, this);
         this.add(backButton, BorderLayout.SOUTH);
 
-        //scoreLabel = new JLabel("Score: 0", JLabel.LEFT);
-
-        //levelLabel = new JLabel("Level: 1", JLabel.LEFT);
-
-        //add(scoreLabel, BorderLayout.WEST);
-        //add(levelLabel, BorderLayout.BEFORE_FIRST_LINE);
-        //scoreLabel.setVisible(true);
-        //levelLabel.setVisible(true);
-
         gameKeyboardControls();
-        //this.setPreferredSize(new Dimension(300, 350));
 
         this.pack();
         this.setVisible(true);
     }
-    private JPanel createInfoPanel(){
+
+    private JPanel createTitlePanel() {
+        JPanel playPanel = new JPanel();
+        playPanel.setLayout(new GridLayout(2, 1));
+
+        JLabel playLabel = new JLabel("Tetris Play", JLabel.CENTER);
+        playLabel.setOpaque(true);
+        playLabel.setForeground(Color.BLACK);
+        playLabel.setFont(new Font("SansSerif", Font.BOLD, 30));
+
+        boolean musicStatus = gameSettings.isGameMusicOn();
+        boolean soundStatus = gameSettings.isGameSoundsOn();
+        JLabel musicLabel = new JLabel("Music: " + ((musicStatus) ? "ON" : "OFF") + "  Sound: " + ((soundStatus) ? "ON" : "OFF"), JLabel.CENTER);
+
+        playPanel.add(playLabel);
+        playPanel.add(musicLabel);
+
+        playPanel.setPreferredSize(new Dimension(150, 100));
+        playPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+
+        return playPanel;
+    }
+
+    private JPanel createInfoPanel() {
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridLayout(0, 1));
 
         int initialLevel = gameSettings.getGameLevel();
         int currentLevel = initialLevel;
-        boolean musicStatus = gameSettings.isGameMusicOn();
-        boolean soundStatus = gameSettings.isGameSoundsOn();
 
         JLabel playerInfoLabel = new JLabel("Game Info (Player 1)", JLabel.CENTER);
         JLabel playerTypeLabel = new JLabel("Player Type: Human", JLabel.CENTER);
-        JLabel initialLevelLabel = new JLabel("Initial Level: "+ initialLevel, JLabel.CENTER);
-        currentLevelLabel = new JLabel("Current Level: "+ currentLevel, JLabel.CENTER);
-
-        JLabel musicLabel = new JLabel("Music:" + ((musicStatus)?"On":"Off"), JLabel.CENTER);
-        JLabel soundLabel = new JLabel("Sound:" + ((soundStatus)?"On":"Off"), JLabel.CENTER);
+        JLabel initialLevelLabel = new JLabel("Initial Level: " + initialLevel, JLabel.CENTER);
+        currentLevelLabel = new JLabel("Current Level: " + currentLevel, JLabel.CENTER);
 
         infoPanel.add(playerInfoLabel);
         infoPanel.add(playerTypeLabel);
@@ -99,8 +108,6 @@ public class GameScreen extends JFrame {
         infoPanel.add(currentLevelLabel);
         infoPanel.add(linesErasedLabel);
         infoPanel.add(scoreLabel);
-        infoPanel.add(musicLabel);
-        infoPanel.add(soundLabel);
 
         infoPanel.setPreferredSize(new Dimension(150, 390));
         infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
@@ -133,10 +140,11 @@ public class GameScreen extends JFrame {
 
     public void updateLevel(int level) {
         currentLevelLabel.setText("Current Level: " + level);
-        System.out.println("level:"+level);
+        System.out.println("level:" + level);
         currentLevelLabel.revalidate();
         currentLevelLabel.repaint();
     }
+
     public void updateLinesErased(int linesErased) {
         linesErasedLabel.setText("Lines Erased: " + linesErased);
         linesErasedLabel.revalidate();
@@ -183,9 +191,6 @@ public class GameScreen extends JFrame {
         keyActionMap.put("down", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (gameSettings.isGameSoundsOn()) {
-                    GameBlock.playMoveTurnMusic();
-                }
                 gameBoard.moveBlockDownFast();
             }
         });
