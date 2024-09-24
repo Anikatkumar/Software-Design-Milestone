@@ -23,6 +23,9 @@ public class ConfigurationScreen extends JFrame {
     private boolean extendModeOn;
     int minLevel = 1;
     int maxLevel = 10;
+    // Player Mode variables
+    private JRadioButton playerOneHuman, playerOneAI, playerOneExternal;
+    private JRadioButton playerTwoHuman, playerTwoAI, playerTwoExternal;
 
     // Private constructor for Singleton pattern
     private ConfigurationScreen() {
@@ -53,7 +56,7 @@ public class ConfigurationScreen extends JFrame {
     // UI Initialization logic
     private void initializeUI(GameSettings savedGameSettings) {
         JFrame frame = this;  // Use 'this' instead of creating a new JFrame
-        frame.setSize(750, 600);
+        frame.setSize(750, 700);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
 
@@ -80,7 +83,7 @@ public class ConfigurationScreen extends JFrame {
 
     private JPanel setupConfigurationPanel(GameSettings savedGameSettings) {
         JPanel configurationPanel = new JPanel();
-        configurationPanel.setLayout(new GridLayout(8, 3, 5, 5));
+        configurationPanel.setLayout(new GridLayout(13, 3, 5, 5));  // Updated for more rows and columns
 
         // Field Width Slider
         JLabel fieldWidthLabel = new JLabel("Field Width (No of cells):");
@@ -117,10 +120,6 @@ public class ConfigurationScreen extends JFrame {
         });
 
         // Game Level Slider
-        if (initialGameLevel < minLevel || initialGameLevel > maxLevel) {
-            System.out.println("Invalid initial level from JSON: " + initialGameLevel);
-            initialGameLevel = 1;  // Set to a default valid value if out of range
-        }
         JLabel gameLevelLabel = new JLabel("Game Level:");
         JSlider gameLevelSlider = new JSlider(1, 10, initialGameLevel);
         gameLevelSlider.setMajorTickSpacing(1);
@@ -149,12 +148,70 @@ public class ConfigurationScreen extends JFrame {
         JCheckBox aiPlayCheckbox = new JCheckBox("AI Play (On|Off):");
         aiPlayCheckbox.setSelected(savedGameSettings.getAiModeOn());
         JLabel aiPlayStatusLabel = new JLabel(savedGameSettings.getAiModeOn() ? "On" : "Off");
+        extendModeOn = true;
+        JCheckBox extendModeCheckbox = new JCheckBox("Extend Mode (On|Off):", extendModeOn);
 
-        JCheckBox extendModeCheckbox = new JCheckBox("Extend Mode (On|Off):");
-        extendModeCheckbox.setSelected(savedGameSettings.isExtendModeOn());
-        JLabel extendModeStatusLabel = new JLabel(savedGameSettings.isExtendModeOn() ? "On" : "Off");
+        //JCheckBox extendModeCheckbox = new JCheckBox("Extend Mode (On|Off):");
+        //extendModeCheckbox.setSelected(savedGameSettings.isExtendModeOn());
+        JLabel extendModeStatusLabel = new JLabel("On");
+        //JLabel extendModeStatusLabel = new JLabel(savedGameSettings.isExtendModeOn() ? "On" : "Off");
 
-        // Add components to the panel
+        // Player One Type
+        JLabel playerOneLabel = new JLabel("Player One Type:");
+        playerOneHuman = new JRadioButton("Human", true);
+        playerOneAI = new JRadioButton("AI");
+        playerOneExternal = new JRadioButton("External");
+
+        ButtonGroup playerOneGroup = new ButtonGroup();
+        playerOneGroup.add(playerOneHuman);
+        playerOneGroup.add(playerOneAI);
+        playerOneGroup.add(playerOneExternal);
+
+        JPanel playerOnePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        playerOnePanel.add(playerOneHuman);
+        playerOnePanel.add(playerOneAI);
+        playerOnePanel.add(playerOneExternal);
+
+        // Player Two Type
+        JLabel playerTwoLabel = new JLabel("Player Two Type:");
+        playerTwoHuman = new JRadioButton("Human", true);
+        playerTwoAI = new JRadioButton("AI");
+        playerTwoExternal = new JRadioButton("External");
+
+        ButtonGroup playerTwoGroup = new ButtonGroup();
+        playerTwoGroup.add(playerTwoHuman);
+        playerTwoGroup.add(playerTwoAI);
+        playerTwoGroup.add(playerTwoExternal);
+
+        JPanel playerTwoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        playerTwoPanel.add(playerTwoHuman);
+        playerTwoPanel.add(playerTwoAI);
+        playerTwoPanel.add(playerTwoExternal);
+
+        // Update Player Two Type based on Extend Mode
+        extendModeCheckbox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                extendModeOn = extendModeCheckbox.isSelected();
+                extendModeStatusLabel.setText(extendModeOn ? "On" : "Off");
+
+                // Enable or disable Player Two Type options based on Extend Mode
+                playerTwoHuman.setEnabled(extendModeOn);
+                playerTwoAI.setEnabled(extendModeOn);
+                playerTwoExternal.setEnabled(extendModeOn);
+
+                // Optionally deselect Player Two options when disabled
+                if (!extendModeOn) {
+                    playerTwoHuman.setSelected(false);
+                    playerTwoAI.setSelected(false);
+                    playerTwoExternal.setSelected(false);
+                }
+
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
+            }
+        });
+
+        // Add components to the panel (Ensure everything is in line)
         configurationPanel.add(fieldWidthLabel);
         configurationPanel.add(fieldWidthSlider);
         configurationPanel.add(fieldWidthValueLabel);
@@ -189,8 +246,8 @@ public class ConfigurationScreen extends JFrame {
         });
         configurationPanel.add(new JLabel());
 
-        // Removed. For Milestone 2
         configurationPanel.add(aiPlayCheckbox);
+        configurationPanel.add(aiPlayStatusLabel);
         configurationPanel.add(aiPlayStatusLabel);
         aiPlayCheckbox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -211,6 +268,16 @@ public class ConfigurationScreen extends JFrame {
             }
         });
 
+        configurationPanel.add(new JLabel());
+
+        configurationPanel.add(playerOneLabel);
+        configurationPanel.add(playerOnePanel);
+        configurationPanel.add(new JLabel());
+
+        configurationPanel.add(playerTwoLabel);
+        configurationPanel.add(playerTwoPanel);
+        configurationPanel.add(new JLabel());
+
         return configurationPanel;
     }
 
@@ -224,6 +291,7 @@ public class ConfigurationScreen extends JFrame {
         newGameSettings.setExtendModeOn(extendMode);
         newGameSettings.setGameLevel(gameLevel);
         newGameSettings.writeSettingsIntoJsonFile(newGameSettings);
+        //extendModeOn = false; // Force it to true by default
         System.out.println("New Settings: " + newGameSettings.toString());
     }
 
@@ -246,3 +314,4 @@ public class ConfigurationScreen extends JFrame {
         return buttonPanel;
     }
 }
+
