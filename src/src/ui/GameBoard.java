@@ -19,10 +19,12 @@ public class GameBoard extends JPanel {
     private JLabel playLabel = new JLabel("Play");
     int xAxis;
     int yAxis;
+    int temp = 0;
     private DelayClass threadClass;
     GameSettings gameSettings = new GameSettings();
     int blockXGridInitialPosition;
     int blockYGridInitialPosition;
+    private int lastLevelThreshold = 0;
     private final Color[][] settledBlocks;
     private Color[] blockColors = {Color.CYAN, Color.GREEN, Color.ORANGE, Color.yellow, Color.red, Color.GRAY, Color.pink};
     private Color newBlockColorSelectedAtRandom;
@@ -32,7 +34,6 @@ public class GameBoard extends JPanel {
     private int currentLevel;
     private int linesErased = 0;
     private GameScreen gameScreen;
-    private DelayClass gameThread;
 
 //        public int[][][] shapes = {
 //                {{1, 0}, {1, 0}, {1, 1}},   // L
@@ -96,6 +97,8 @@ public class GameBoard extends JPanel {
 
         // Create a new block when the game board is initialized
         createdNewBlockWithColor = createNewBlock();
+        initialLevel = gameSettings.getGameLevel();
+        currentLevel = initialLevel;
     }
 
     /**
@@ -121,11 +124,11 @@ public class GameBoard extends JPanel {
 
     public void initializeThread(DelayClass thread) {
         this.threadClass = thread;
-        if (gameSettings.isGameMusicOn())
-        // music playing background one
-        {
-            GameBlock.playBackGroundMusic();
-        }
+//        if (gameSettings.isGameMusicOn())
+//        // music playing background one
+//        {
+//            GameBlock.playBackGroundMusic();
+//        }
     }
 
 
@@ -157,6 +160,7 @@ public class GameBoard extends JPanel {
 
     public int clearOutCompletedLines() {
         boolean flag;
+
         int rowsErased = 0;
         for (int i = noOfRows - 1; i >= 0; i--) {
             flag = true;
@@ -193,11 +197,15 @@ public class GameBoard extends JPanel {
 
             gameScreen.updateLinesErased(linesErased);
 
-
-            if (linesErased % 10 == 0) {
+            temp += rowsErased;
+            System.out.println("current level: " + currentLevel + " temp: " + temp); ;
+            if (temp >= 10) {
+                temp = 0;
+                GameBlock.playLevelUpMusic();
                 currentLevel++;
+                System.out.println(currentLevel);
                 gameScreen.updateLevel(currentLevel);
-                gameThread.increaseBlockSpeed(currentLevel);
+                threadClass.increaseBlockSpeed(currentLevel);
                 System.out.println("Current level: " + currentLevel);
 
             }

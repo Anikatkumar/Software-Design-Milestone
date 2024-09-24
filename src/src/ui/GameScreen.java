@@ -13,6 +13,7 @@ public class GameScreen extends JFrame {
     private BackButton backButton;
     private JLabel scoreLabel = new JLabel("Score: 0", JLabel.CENTER);
     private JLabel pauseLabel;
+    private JLabel musicLabel;
     private JLabel currentLevelLabel;
     private JLabel linesErasedLabel = new JLabel("Lines Erased: 0", JLabel.CENTER);
     private DelayClass threadClass;
@@ -51,7 +52,7 @@ public class GameScreen extends JFrame {
         centerPanel.add(containerPanel);
         this.add(centerPanel, BorderLayout.CENTER);
         gameBoard.add(pauseLabel);
-        
+
         threadClass = new DelayClass(gameBoard, this);
         System.out.println("(GameScreen) NEW threadClass started.");
         System.out.println(threadClass.getName());
@@ -79,7 +80,7 @@ public class GameScreen extends JFrame {
 
         boolean musicStatus = gameSettings.isGameMusicOn();
         boolean soundStatus = gameSettings.isGameSoundsOn();
-        JLabel musicLabel = new JLabel("Music: " + ((musicStatus) ? "ON" : "OFF") + "  Sound: " + ((soundStatus) ? "ON" : "OFF"), JLabel.CENTER);
+        musicLabel = new JLabel("Music: " + ((musicStatus) ? "ON" : "OFF") + "  Sound: " + ((soundStatus) ? "ON" : "OFF"), JLabel.CENTER);
 
         playPanel.add(playLabel);
         playPanel.add(musicLabel);
@@ -90,6 +91,13 @@ public class GameScreen extends JFrame {
         return playPanel;
     }
 
+    public void updateMusicLabel(){
+        boolean musicStatus = gameSettings.isGameMusicOn();
+        boolean soundStatus = gameSettings.isGameSoundsOn();
+        musicLabel.setText("Music: " + ((musicStatus) ? "ON" : "OFF") + "  Sound: " + ((soundStatus) ? "ON" : "OFF"));
+        musicLabel.revalidate();
+        musicLabel.repaint();
+    }
     private JPanel createInfoPanel() {
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridLayout(0, 1));
@@ -160,6 +168,8 @@ public class GameScreen extends JFrame {
         keyInput.put(KeyStroke.getKeyStroke("UP"), "up");
         keyInput.put(KeyStroke.getKeyStroke("LEFT"), "left");
         keyInput.put(KeyStroke.getKeyStroke("P"), "pause");
+        keyInput.put(KeyStroke.getKeyStroke("M"), "music");
+        keyInput.put(KeyStroke.getKeyStroke("S"), "sound");
 
         keyActionMap.put("right", new AbstractAction() {
             @Override
@@ -212,6 +222,35 @@ public class GameScreen extends JFrame {
 
 
         // sound controls
+
+        keyActionMap.put("music", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gameSettings.setGameMusicOn(!gameSettings.isGameMusicOn());
+                gameSettings.writeSettingsIntoJsonFile(gameSettings);
+                if (gameSettings.isGameMusicOn()) {
+                    GameBlock.playBackGroundMusic();
+                } else {
+                    GameBlock.pauseBackGroundMusic();
+                }
+                updateMusicLabel();
+            }
+        });
+
+        keyActionMap.put("sound", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gameSettings.setGameSoundsOn(!gameSettings.isGameSoundsOn());
+                gameSettings.writeSettingsIntoJsonFile(gameSettings);
+                if (gameSettings.isGameSoundsOn()) {
+                    GameBlock.playMoveTurnMusic();
+                } else {
+                    GameBlock.pauseGameSound();
+
+                }
+                updateMusicLabel();
+            }
+        });
 
     }
 

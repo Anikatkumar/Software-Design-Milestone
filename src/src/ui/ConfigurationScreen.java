@@ -230,6 +230,11 @@ public class ConfigurationScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 musicStatusLabel.setText(musicCheckbox.isSelected() ? "On" : "Off");
                 gameMusicOn = musicCheckbox.isSelected();
+                if (gameMusicOn) {
+                    GameBlock.playBackGroundMusic();
+                } else {
+                    GameBlock.pauseBackGroundMusic();
+                }
                 saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel);
             }
         });

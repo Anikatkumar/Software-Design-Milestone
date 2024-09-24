@@ -1,6 +1,7 @@
 package ui;
 
 import menuOptionButtons.ExitButton;
+import settings.GameSettings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,9 +14,13 @@ public class MainMenuScreen extends JFrame{
     // Setting Image Path Dynamically
     String basePath = new File("").getAbsolutePath();
     String pathToMenuIcon = basePath + "/src/src/resources/images/menuIcon.png";
+    GameSettings gameSettings =new GameSettings();
 
     public void showMainScreen(){
-
+        if(gameSettings.readSettingsFromJsonFile().isGameMusicOn()){
+            System.out.println("Music Main M Screen");
+            GameBlock.playBackGroundMusic();
+        }
         int width = 750;
         int height = 550;
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
@@ -128,87 +133,3 @@ public class MainMenuScreen extends JFrame{
 
     }
 }
-
-//int width = 750;
-//int height = 550;
-//Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-//int x = (screen.width - width) / 2;
-//int y = (screen.height - height) / 2;
-//JLabel menuScreenLabel = new JLabel("Menu Screen" , JLabel.CENTER);
-//        menuScreenLabel.setFont(new Font("Sans-Serif", Font.BOLD, 12));
-//JFrame jf = new JFrame();
-//        jf.add(menuScreenLabel, BorderLayout.SOUTH);
-//        jf.setBounds(x, y, width, height);
-//        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        jf.setVisible(true);
-
-
-/*
-package ui;
-
-import menuOptionButtons.ConfigButton;
-import menuOptionButtons.ExitButton;
-import menuOptionButtons.HighScoresButton;
-import menuOptionButtons.PlayButton;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import java.awt.*;
-
-public class MainMenuScreen extends JFrame{
-    String pathToMenuIcon = "E:\\Masters\\Sem3\\software design\\Project\\Software-Design-Milestone\\src\\src\\resources\\images\\menuIcon.png";
-    public void showMainScreen(){
-        ExitButton exitButton = new ExitButton();
-        HighScoresButton highScoresButton = new HighScoresButton();
-        ConfigButton  configButton = new ConfigButton();
-        PlayButton playButton = new PlayButton();
-        JFrame screenFrame = new JFrame();
-
-        screenFrame.setTitle("Tetris Game");
-        ImageIcon menuIconImage = new ImageIcon(pathToMenuIcon);
-        screenFrame.setIconImage(menuIconImage.getImage());
-
-        int width = 750;
-        int height = 550;
-        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screen.width - width) / 2;
-        int y = (screen.height - height) / 2;
-
-        JLabel menuTopLabel = new JLabel("Main Menu");
-        menuTopLabel.setOpaque(true);
-        menuTopLabel.setForeground(Color.BLACK);
-        menuTopLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-
-
-        screenFrame.add(menuTopLabel);
-        screenFrame.add(playButton.displayPlayButton());
-        screenFrame.add(configButton.displayConfigurationButton());
-        screenFrame.add(highScoresButton.displayHighScoreButton());
-        screenFrame.add(exitButton.displayExitButton());
-
-
-
-
-
-        screenFrame.setLayout(new FlowLayout());
-        screenFrame.setBounds(x,y,width,height);
-        screenFrame.setVisible(true);
-        screenFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-    }
-}
-
-//int width = 750;
-//int height = 550;
-//Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-//int x = (screen.width - width) / 2;
-//int y = (screen.height - height) / 2;
-//JLabel menuScreenLabel = new JLabel("Menu Screen" , JLabel.CENTER);
-//        menuScreenLabel.setFont(new Font("Sans-Serif", Font.BOLD, 12));
-//JFrame jf = new JFrame();
-//        jf.add(menuScreenLabel, BorderLayout.SOUTH);
-//        jf.setBounds(x, y, width, height);
-//        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        jf.setVisible(true);
-
-* **/

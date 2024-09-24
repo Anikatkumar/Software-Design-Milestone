@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static java.lang.Math.abs;
+
 public class DelayClass extends Thread {
     private GameBoard gameBoard;
     private GameScreen gameScreen;

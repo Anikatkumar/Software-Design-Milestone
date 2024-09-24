@@ -85,6 +85,7 @@ public class GameSettings {
         } catch (IOException e) {
             System.out.println("Error Saving Settings: " + e.getMessage());
         }
+        System.out.println("New Settings: " + settings.toString());
     }
 
     public GameSettings readSettingsFromJsonFile() {
