@@ -44,6 +44,9 @@ public class BackButton extends JButton {
 
                     if (response == JOptionPane.YES_OPTION) {
 //                        System.out.println("Confirmation Dialog - Yes");
+
+                        //
+                        gameThread.backButtonExitTriggered();
                         new MainMenuScreen().showMainScreen();
                         frame.dispose();
                     } else {

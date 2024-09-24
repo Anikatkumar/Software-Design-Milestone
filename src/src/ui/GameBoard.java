@@ -26,11 +26,12 @@ public class GameBoard extends JPanel {
     private Color[] blockColors = {Color.CYAN, Color.GREEN, Color.ORANGE, Color.yellow, Color.red, Color.GRAY, Color.pink};
     private Color newBlockColorSelectedAtRandom;
     Color createdNewBlockWithColor;
-    private int score=0;
+    public int score=0;
     private int initialLevel;
     private int currentLevel;
     private int linesErased = 0;
     private GameScreen gameScreen;
+    private DelayClass gameThread;
 
 //        public int[][][] shapes = {
 //                {{1, 0}, {1, 0}, {1, 1}},   // L
@@ -151,6 +152,7 @@ public class GameBoard extends JPanel {
             if(linesErased %10 == 0){
                 currentLevel++;
                 gameScreen.updateLevel(currentLevel);
+                gameThread.increaseBlockSpeed(currentLevel);
                 System.out.println("Current level: " + currentLevel);
 
             }
