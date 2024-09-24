@@ -15,7 +15,6 @@ public class GameSettings {
     private boolean gameMusicOn;
     private boolean gameSoundsOn;
     private boolean extendModeOn;
-
     private String playerOneType;
     private String playerTwoType;
 
@@ -79,7 +78,7 @@ public class GameSettings {
     public String getPlayerOneType() {
         return playerOneType;
     }
-
+    
     public void setPlayerOneType(String playerOneType) {
         this.playerOneType = playerOneType;
     }

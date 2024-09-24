@@ -8,37 +8,61 @@ import java.awt.event.ActionEvent;
 
 public class GameScreen extends JFrame {
     private JPanel GameBoard;
-    private JButton Back;
-    private GameBoard gameBoard;
-    private BackButton backButton;
-    private JLabel scoreLabel = new JLabel("Score: 0", JLabel.CENTER);
-    private JLabel pauseLabel;
-    private JLabel musicLabel;
-    private JLabel currentLevelLabel;
-    private JLabel linesErasedLabel = new JLabel("Lines Erased: 0", JLabel.CENTER);
-    private DelayClass threadClass;
     GameSettings gameSettings = new GameSettings();
+    private JButton Back;
+    private BackButton backButton;
+    protected JLabel pauseLabel, pauseLabel2;
+    private JLabel musicLabel;
+
+    // Player 1 Settings
+    private GameBoard gameBoard;
+    protected DelayClass threadClass;
+
+    // Player 2 Settings
+    private GameBoard gameBoard2;
+    protected DelayClass threadClass2;
 
 
     public GameScreen() {
         System.out.println("GAME SCREEN DISPLAY");
         gameSettings = gameSettings.readSettingsFromJsonFile();
-        gameBoard = new GameBoard(this);
 
         // Pause Label
-        pauseLabel = new JLabel("Press 'P' again to resume the game   ", JLabel.RIGHT);
-        pauseLabel.setVisible(false);
-        pauseLabel.setFont(new Font("Arial", Font.ITALIC, 10));  // Customize font size and style
+        this.pauseLabel = new JLabel("Press 'P' again to resume the game   ", JLabel.RIGHT);
+        this.pauseLabel.setVisible(false);
+        this.pauseLabel.setFont(new Font("Arial", Font.ITALIC, 10));  // Customize font size and style
+        // Pause Label 2
+        this.pauseLabel2 = new JLabel("Press 'P' again to resume the game   ", JLabel.RIGHT);
+        this.pauseLabel2.setVisible(false);
+        this.pauseLabel2.setFont(new Font("Arial", Font.ITALIC, 10));  // Customize font size and style
 
         JPanel titlePanel = createTitlePanel();
-        JPanel infoPanel = createInfoPanel();
-
         this.setLayout(new BorderLayout());
         this.add(titlePanel, BorderLayout.NORTH);
 
+        if (!gameSettings.isExtendModeOn()) {
+            this.onePlayerMode();
+        } else {
+            this.twoPlayerMode();
+        }
+
+        backButton = new BackButton(this);
+        this.add(backButton, BorderLayout.SOUTH);
+
+        gameKeyboardControls();
+
+        this.pack();
+        this.setVisible(true);
+    }
+
+    public void onePlayerMode() {
+        System.out.println("(GameScreen) One Player Mode)");
+        gameBoard = new GameBoard(this, "1");
+
+        JPanel infoPanel = gameBoard.infoPanel;
+
         // To display Info Panel and Game Board Panel Side by Side
         JPanel centerPanel = new JPanel();
-//        centerPanel.setBackground(Color.blue);
         centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
         JPanel containerPanel = new JPanel();
@@ -54,14 +78,64 @@ public class GameScreen extends JFrame {
         gameBoard.add(pauseLabel);
 
         threadClass = new DelayClass(gameBoard, this);
-        System.out.println("(GameScreen) NEW threadClass started.");
-        System.out.println(threadClass.getName());
+        System.out.println("(GameScreen) GameBoard Thread 1 started::" + threadClass.getName());
         threadClass.start();
 
         gameBoard.initializeThread(threadClass);
 
-        backButton = new BackButton(this, threadClass, this);
-        this.add(backButton, BorderLayout.SOUTH);
+        gameKeyboardControls();
+
+        this.pack();
+        this.setVisible(true);
+    }
+
+    public void twoPlayerMode() {
+        System.out.println("(GameScreen) Two Player Mode");
+        gameBoard = new GameBoard(this, "1");
+        gameBoard.setPreferredSize(new Dimension(500, getHeight()));
+
+        gameBoard2 = new GameBoard(this, "2");
+        gameBoard2.setPreferredSize(new Dimension(500, getHeight()));
+
+        JPanel infoPanel = gameBoard.infoPanel;
+        JPanel infoPanel2 = gameBoard2.infoPanel;
+
+        JPanel containerPanel = new JPanel();
+        containerPanel.setLayout(new GridLayout(0, 4));
+        containerPanel.setBackground(Color.magenta);
+        containerPanel.add(infoPanel);
+        containerPanel.add(gameBoard);
+        containerPanel.add(infoPanel2);
+        containerPanel.add(gameBoard2);
+
+        // To display Info Panel and Game Board Panel Side by Side
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        centerPanel.add(containerPanel);
+
+        this.add(centerPanel, BorderLayout.CENTER);
+        gameBoard.add(pauseLabel);
+        gameBoard2.add(pauseLabel2);
+
+        // Adjust Window Size
+        int width = 750;
+        int height = 550;
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screen.width - width) / 2;
+        int y = (screen.height - height) / 2;
+
+        System.out.println("Center Panel Width: " + centerPanel.getHeight());
+        this.setBounds(x, y, 1000, centerPanel.getHeight());
+
+        threadClass = new DelayClass(gameBoard, this);
+        System.out.println("(GameScreen) GameBoard Thread 1 started::" + threadClass.getName());
+        threadClass.start();
+        threadClass2 = new DelayClass(gameBoard2, this);
+        System.out.println("(GameScreen) GameBoard Thread 2 started::" + threadClass2.getName());
+        threadClass2.start();
+
+        gameBoard.initializeThread(threadClass);
+        gameBoard2.initializeThread(threadClass2);
 
         gameKeyboardControls();
 
@@ -91,43 +165,19 @@ public class GameScreen extends JFrame {
         return playPanel;
     }
 
-    public void updateMusicLabel(){
+    public void updateMusicLabel() {
         boolean musicStatus = gameSettings.isGameMusicOn();
         boolean soundStatus = gameSettings.isGameSoundsOn();
         musicLabel.setText("Music: " + ((musicStatus) ? "ON" : "OFF") + "  Sound: " + ((soundStatus) ? "ON" : "OFF"));
         musicLabel.revalidate();
         musicLabel.repaint();
     }
-    private JPanel createInfoPanel() {
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new GridLayout(0, 1));
-
-        int initialLevel = gameSettings.getGameLevel();
-        int currentLevel = initialLevel;
-
-        JLabel playerInfoLabel = new JLabel("Game Info (Player 1)", JLabel.CENTER);
-        JLabel playerTypeLabel = new JLabel("Player Type: Human", JLabel.CENTER);
-        JLabel initialLevelLabel = new JLabel("Initial Level: " + initialLevel, JLabel.CENTER);
-        currentLevelLabel = new JLabel("Current Level: " + currentLevel, JLabel.CENTER);
-
-        infoPanel.add(playerInfoLabel);
-        infoPanel.add(playerTypeLabel);
-        infoPanel.add(initialLevelLabel);
-        infoPanel.add(currentLevelLabel);
-        infoPanel.add(linesErasedLabel);
-        infoPanel.add(scoreLabel);
-
-        infoPanel.setPreferredSize(new Dimension(150, 390));
-        infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-
-        return infoPanel;
-    }
 
     public void showScreen() {
         //GameScreen gameScreen = new GameScreen();
 //        int width = 750;
-        int width = 600;
-        int height = 600;
+        int width = 700;
+        int height = 700;
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (screen.width - width) / 2;
         int y = (screen.height - height) / 2;
@@ -135,28 +185,6 @@ public class GameScreen extends JFrame {
         this.setVisible(true);
         this.setTitle("Play");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    }
-
-
-    public void updateScore(int score) {
-        //System.out.println("Updating score to: " + score);  // Debug output
-
-        scoreLabel.setText("Score: " + score);
-        scoreLabel.revalidate();  // Ensure layout is updated
-        scoreLabel.repaint();
-    }
-
-    public void updateLevel(int level) {
-        currentLevelLabel.setText("Current Level: " + level);
-        System.out.println("level:" + level);
-        currentLevelLabel.revalidate();
-        currentLevelLabel.repaint();
-    }
-
-    public void updateLinesErased(int linesErased) {
-        linesErasedLabel.setText("Lines Erased: " + linesErased);
-        linesErasedLabel.revalidate();
-        linesErasedLabel.repaint();
     }
 
     protected void gameKeyboardControls() {
@@ -209,13 +237,17 @@ public class GameScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (threadClass.gamePaused) {
                     pauseLabel.setVisible(false);
-//                    System.out.println("(GameScreen) Game Resumed.");
+                    pauseLabel2.setVisible(false);
+                    System.out.println("(GameScreen) Game Resumed.");
                     threadClass.resumeGame();
+                    threadClass2.resumeGame();
                 } else {
                     // Set up the label for the message
                     pauseLabel.setVisible(true); // Toggle visibility
+                    pauseLabel2.setVisible(true); // Toggle visibility
                     System.out.println("(GameScreen) Game Paused.");
                     threadClass.pauseGame();
+                    threadClass2.pauseGame();
                 }
             }
         });
