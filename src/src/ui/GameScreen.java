@@ -23,10 +23,13 @@ public class GameScreen extends JFrame {
     private GameBoard gameBoard2;
     protected DelayClass threadClass2;
 
+    // Facade for display
+    private GameDisplayFacade gameDisplayFacade;
+
     public GameScreen() {
         System.out.println("GAME SCREEN DISPLAY");
         gameSettings = gameSettings.readSettingsFromJsonFile();
-
+        gameDisplayFacade = new GameDisplayFacade(); // Initialize the facade
         // Pause Label
         this.pauseLabel = new JLabel("Press 'P' again to resume the game   ", JLabel.RIGHT);
         this.pauseLabel.setVisible(false);
@@ -173,7 +176,7 @@ public class GameScreen extends JFrame {
         musicLabel.repaint();
     }
 
-    public void showScreen() {
+   /* public void showScreen() {
         //GameScreen gameScreen = new GameScreen();
 //        int width = 750;
         int width = 700;
@@ -185,7 +188,11 @@ public class GameScreen extends JFrame {
         this.setVisible(true);
         this.setTitle("Play");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    }
+    } */
+   // Refactored showScreen using Facade
+   public void showScreen() {
+       gameDisplayFacade.showScreen(this, 700, 700);
+   }
 
     protected void gameKeyboardControls() {
         InputMap keyInput = this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
