@@ -1,1 +1,1 @@
-{"aiModeOn":false,"fieldWidth":10,"fieldHeight":24,"initialGameLevel":10,"gameMusicOn":true,"gameSoundsOn":false,"extendModeOn":false,"playerOneType":"AI","playerTwoType":"AI"}
+{"aiModeOn":false,"fieldWidth":10,"fieldHeight":24,"initialGameLevel":8,"gameMusicOn":false,"gameSoundsOn":false,"extendModeOn":true,"playerOneType":"Human","playerTwoType":"Human"}
