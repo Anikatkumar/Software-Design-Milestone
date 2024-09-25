@@ -5,6 +5,7 @@ import settings.GameSettings;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 public class GameScreen extends JFrame {
     private JPanel GameBoard;
@@ -21,7 +22,6 @@ public class GameScreen extends JFrame {
     // Player 2 Settings
     private GameBoard gameBoard2;
     protected DelayClass threadClass2;
-
 
     public GameScreen() {
         System.out.println("GAME SCREEN DISPLAY");
@@ -191,15 +191,23 @@ public class GameScreen extends JFrame {
         InputMap keyInput = this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap keyActionMap = this.getRootPane().getActionMap();
 
-        keyInput.put(KeyStroke.getKeyStroke("RIGHT"), "right");
-        keyInput.put(KeyStroke.getKeyStroke("DOWN"), "down");
-        keyInput.put(KeyStroke.getKeyStroke("UP"), "up");
-        keyInput.put(KeyStroke.getKeyStroke("LEFT"), "left");
-        keyInput.put(KeyStroke.getKeyStroke("P"), "pause");
-        keyInput.put(KeyStroke.getKeyStroke("M"), "music");
-        keyInput.put(KeyStroke.getKeyStroke("S"), "sound");
+        // Player 1 Controls
+        keyInput.put(KeyStroke.getKeyStroke("RIGHT"), "P1 right");
+        keyInput.put(KeyStroke.getKeyStroke("DOWN"), "P1 down");
+        keyInput.put(KeyStroke.getKeyStroke("UP"), "P1 up");
+        keyInput.put(KeyStroke.getKeyStroke("LEFT"), "P1 left");
 
-        keyActionMap.put("right", new AbstractAction() {
+        // Player 2 Controls
+        keyInput.put(KeyStroke.getKeyStroke("typed ."), "P2 right");
+        keyInput.put(KeyStroke.getKeyStroke("typed ,"), "P2 left");
+        keyInput.put(KeyStroke.getKeyStroke("typed l"), "P2 rotate");
+      //  keyInput.put(KeyStroke.getKeyStroke("pressed SPACE"), "P2 downFast");
+//        keyInput.put(KeyStroke.getKeyStroke("SPACE"), "Space-downFast");
+        this.setFocusable(true);
+        this.requestFocusInWindow();
+        keyInput.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,0,false),"spacePressed");
+        // Player 1 Actions
+        keyActionMap.put("P1 right", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (gameSettings.isGameSoundsOn()) {
@@ -208,7 +216,7 @@ public class GameScreen extends JFrame {
                 gameBoard.moveBlockRight();
             }
         });
-        keyActionMap.put("left", new AbstractAction() {
+        keyActionMap.put("P1 left", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (gameSettings.isGameSoundsOn()) {
@@ -217,7 +225,7 @@ public class GameScreen extends JFrame {
                 gameBoard.moveBlockLeft();
             }
         });
-        keyActionMap.put("up", new AbstractAction() {
+        keyActionMap.put("P1 up", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (gameSettings.isGameSoundsOn()) {
@@ -226,12 +234,51 @@ public class GameScreen extends JFrame {
                 gameBoard.rotateBlockOnUpKeyPressed();
             }
         });
-        keyActionMap.put("down", new AbstractAction() {
+        keyActionMap.put("P1 down", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 gameBoard.moveBlockDownFast();
             }
         });
+
+        // Player 2 Actions
+        keyActionMap.put("P2 right", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gameBoard2.moveBlockRight();
+            }
+        });
+        keyActionMap.put("P2 left", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gameBoard2.moveBlockLeft();
+            }
+        });
+        keyActionMap.put("P2 rotate", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gameBoard2.rotateBlockOnUpKeyPressed();
+            }
+        });
+
+        keyActionMap.put("spacePressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Space-downFast triggered");
+                gameBoard2.moveBlockDownFast();
+            }
+        });
+
+
+        // General Game Controls (Pause, Music, Sound)
+        addGeneralGameControls(keyInput, keyActionMap);
+    }
+
+    private void addGeneralGameControls(InputMap keyInput, ActionMap keyActionMap) {
+        keyInput.put(KeyStroke.getKeyStroke("P"), "pause");
+        keyInput.put(KeyStroke.getKeyStroke("M"), "music");
+        keyInput.put(KeyStroke.getKeyStroke("S"), "sound");
+
         keyActionMap.put("pause", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -251,10 +298,7 @@ public class GameScreen extends JFrame {
                 }
             }
         });
-
-
         // sound controls
-
         keyActionMap.put("music", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -278,12 +322,9 @@ public class GameScreen extends JFrame {
                     GameBlock.playMoveTurnMusic();
                 } else {
                     GameBlock.pauseGameSound();
-
                 }
                 updateMusicLabel();
             }
         });
-
     }
-
 }
