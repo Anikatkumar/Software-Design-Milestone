@@ -1,6 +1,8 @@
+import AI.TetrisGameWithAI;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import settings.GameSettings;
+import ui.GameBoard;
 import ui.MainMenuScreen;
 import ui.SplashScreen;
 
@@ -15,5 +17,11 @@ public class Main {
         MainMenuScreen mainMenu = new MainMenuScreen();
 //        splash.showSplash();
         SwingUtilities.invokeLater(mainMenu::showMainScreen);
+        GameBoard gameBoard = new GameBoard(20);
+        TetrisGameWithAI game = new TetrisGameWithAI(gameBoard);
+        while (!game.isGameOver()) {
+            game.render(); // Render the game
+            game.dropPiece();
+            }
     }
 }

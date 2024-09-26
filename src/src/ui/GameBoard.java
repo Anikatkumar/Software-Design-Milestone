@@ -1,5 +1,7 @@
 package ui;
 
+import AI.BoardEvaluator;
+import AI.TetrisAI;
 import settings.GameSettings;
 
 import javax.swing.*;
@@ -25,9 +27,13 @@ public class GameBoard extends JPanel {
     private Color[] blockColors = {Color.CYAN, Color.GREEN, Color.ORANGE, Color.yellow, Color.red, Color.GRAY, Color.pink};
     private Color newBlockColorSelectedAtRandom;
     Color createdNewBlockWithColor;
+    private GameBlock currentBlock;
+
+    private TetrisAI tetrisAI;  // New AI instance
+    private BoardEvaluator boardEvaluator;  // Evaluator for the board
 
     public int[][][] shapes = {
-            {{1, 0}, {1, 0}, {1, 1}},   // L
+                {{1, 0}, {1, 0}, {1, 1}},   // L
             {{1, 1, 1}},                // Straight Line
             {{1, 1, 0}, {0, 1, 1}},     // Z
             {{1, 1, 1}, {0, 1, 0}},     // T
@@ -60,8 +66,28 @@ public class GameBoard extends JPanel {
         blockSize = (boardWidth / noOfColumns);
         noOfRows = boardHeight / blockSize;
         settledBlocks = new Color[noOfRows][noOfColumns];
-        createdNewBlockWithColor = createNewBlock();
+        GameBlock newBlock = createNewBlock();
+        createdNewBlockWithColor = newBlock.getBlockColor();
+        this.tetrisAI = new TetrisAI();  // Initialize the AI
+        this.boardEvaluator = new BoardEvaluator();  // Initialize board evaluator
+        currentBlock = createNewBlock();
 //        System.out.println("(Game Board) New Block Created. ");
+    }
+
+    public int getBlockXGridPosition() {
+        return blockXGridInitialPosition;
+    }
+
+    // Add this method to get the Y position of the current block, if needed
+    public int getBlockYGridPosition() {
+        return blockYGridInitialPosition;
+    }
+    public void initializeAI() {
+        this.tetrisAI = new TetrisAI();
+        this.boardEvaluator = new BoardEvaluator();
+    }
+    public GameBlock getCurrentBlock() {
+        return currentBlock;  // For the AI to simulate moves
     }
 
     public void initializeThread(DelayClass thread) {
@@ -74,8 +100,39 @@ public class GameBoard extends JPanel {
         }
     }
 
+    // Getter method for number of columns
+    public int getNoOfColumns() {
+        return noOfColumns;
+    }
+
+    // Getter method for the number of rows if needed later
+    public int getNoOfRows() {
+        return noOfRows;
+    }
+
+    public Color[][] getBoard() {
+        return settledBlocks;
+    }
+
+    // Method to convert Color[][] to int[][] for AI evaluation
+    public int[][] getBinaryBoard() {
+        int[][] intBoard = new int[noOfRows][noOfColumns];
+
+        // Convert the Color[][] board to an int[][] board
+        for (int i = 0; i < noOfRows; i++) {
+            for (int j = 0; j < noOfColumns; j++) {
+                // If there's a settled block (i.e., color is not null), set to 1, otherwise 0
+                intBoard[i][j] = (settledBlocks[i][j] != null) ? 1 : 0;
+            }
+        }
+
+        return intBoard;
+    }
 
     protected boolean checkBottom() {
+        if (gameBlock == null) {
+            return false;  // If no block exists, nothing to check
+        }
         if (blockYGridInitialPosition + gameBlock.getBlockShape().length == noOfRows) {
             return false;
         }
@@ -153,22 +210,32 @@ public class GameBoard extends JPanel {
     }
 
 
-    public Color createNewBlock() {
+    public GameBlock createNewBlock() {
         Random r = new Random();
         int randomNumber = r.nextInt(shapes.length);
 
+        // Randomly select a shape and color for the block
         currentShape = shapes[randomNumber];
         newBlockColorSelectedAtRandom = blockColors[r.nextInt(blockColors.length)];
-//        System.out.println("New Shape: " + newBlockColorSelectedAtRandom.toString() + " " + this.shapeNames[randomNumber]);
 
+        // Create a new GameBlock with the selected shape and color
         gameBlock = new GameBlock(currentShape, newBlockColorSelectedAtRandom);
-        blockXGridInitialPosition = 9;
-        blockYGridInitialPosition = -gameBlock.getBlockShape().length;
-        return newBlockColorSelectedAtRandom;
+
+        // Set the initial position of the block on the grid
+        blockXGridInitialPosition = 4;  // Adjust X-axis position
+        blockYGridInitialPosition = -gameBlock.getBlockShape().length;  // Reset Y position
+
+        // Return the newly created GameBlock object
+        return gameBlock;
     }
 
 
+
+
     public void paintBlock(Graphics g) {
+        if (gameBlock == null) {
+            return;  // If there's no block to paint, return early
+        }
         int[][] drawingShape = gameBlock.getBlockShape();
         for (int i = 0; i < gameBlock.getBlockShape().length; i++) {
             for (int j = 0; j < gameBlock.getBlockShape()[0].length; j++) {
@@ -224,27 +291,32 @@ public class GameBoard extends JPanel {
      * merge pre spawned blocks to the game board
      * */
     public void mergeBlock(Color color) {
-//        System.out.println("MERGING: ");
+        if (gameBlock == null) {
+            return;  // If no block exists, nothing to merge
+        }
         int[][] blockShape = gameBlock.getBlockShape();
         int heightOfTheBlock = gameBlock.getBlockShape().length;
         int widthOfTheBlock = gameBlock.getBlockShape()[0].length;
         int horizontalPosition = blockXGridInitialPosition;
         int verticalPosition = blockYGridInitialPosition;
-        System.out.println("V: " + verticalPosition + " : H: " + horizontalPosition);
+
+        // Loop through the current block's shape and add it to the settledBlocks array
         for (int i = 0; i < heightOfTheBlock; i++) {
             for (int j = 0; j < widthOfTheBlock; j++) {
                 if (blockShape[i][j] == 1) {
-                    try {
-//                        System.out.println("Settling Bloc: " + gameBlock.getBlockColor().toString());
-                        settledBlocks[i + abs(verticalPosition)][j + abs(horizontalPosition)] = gameBlock.getBlockColor();
-//                        settledBlocks[i + abs(verticalPosition)][j + abs(horizontalPosition)] = color;
-                    } catch (Exception e) {
-                        System.out.println("Exception: " + e.getMessage());
-                    }
+                    settledBlocks[i + abs(verticalPosition)][j + abs(horizontalPosition)] = gameBlock.getBlockColor();
                 }
             }
         }
+        // ** Clear current block since it's merged **
+        gameBlock = null;
+
+        // ** Create a new block immediately **
+        currentBlock = createNewBlock();
     }
+
+
+
 
 
     public boolean maximumHeightReached() {

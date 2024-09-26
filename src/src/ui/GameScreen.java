@@ -1,5 +1,7 @@
 package ui;
 
+import AI.Move;
+import AI.TetrisAI;
 import settings.GameSettings;
 
 import javax.swing.*;
@@ -19,26 +21,29 @@ public class GameScreen extends JFrame {
     private PlayLabel playLabel;
     GameSettings gameSettings = new GameSettings();
 
+    // AI variable
+    private TetrisAI ai;
+    private boolean useAI = false;  // Toggle this to switch between AI and player
 
     public GameScreen() {
-//        System.out.println("GAME SCREEN DISPLAY");
         gameSettings = gameSettings.readSettingsFromJsonFile();
         gameBoard = new GameBoard(20);
-        playLabel = new PlayLabel();    // Play Label in the Middle of the Play Screen
+        ai = new TetrisAI();
+
+        playLabel = new PlayLabel();
 
         pauseLabel = new JLabel("Press 'P' again to resume the game   ", JLabel.RIGHT);
         pauseLabel.setVisible(false);
-        pauseLabel.setFont(new Font("Arial", Font.ITALIC, 10));  // Customize font size and style
+        pauseLabel.setFont(new Font("Arial", Font.ITALIC, 10));
 
         this.setLayout(new BorderLayout());
         this.add(gameBoard);
         this.add(playLabel);
 
-        //Does not add this label to the frame but to the panel (Game Board)
         gameBoard.add(pauseLabel);
 
+
         threadClass = new DelayClass(gameBoard, this);
-//        System.out.println("(GameScreen) NEW threadClass started.");
         threadClass.start();
 
         gameBoard.initializeThread(threadClass);
@@ -47,7 +52,6 @@ public class GameScreen extends JFrame {
         this.add(backButton, BorderLayout.SOUTH);
 
         scoreLabel = new JLabel("Score: 0", JLabel.LEFT);
-
         levelLabel = new JLabel("Level: 1", JLabel.LEFT);
 
         add(scoreLabel, BorderLayout.WEST);
@@ -55,12 +59,18 @@ public class GameScreen extends JFrame {
         scoreLabel.setVisible(true);
         levelLabel.setVisible(true);
 
+        gameBoard.initializeAI();
         gameKeyboardControls();
+    }
+    public void setAIEnabled(boolean enabled) {
+        this.useAI = enabled;
+    }
+
+    public boolean isAIEnabled() {
+        return this.useAI;
     }
 
     public void showScreen() {
-        //GameScreen gameScreen = new GameScreen();
-//        int width = 750;
         int width = 600;
         int height = 600;
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
@@ -72,7 +82,6 @@ public class GameScreen extends JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
-
     public void updateScore(int score) {
         scoreLabel.setText("Score: " + score);
     }
@@ -80,7 +89,6 @@ public class GameScreen extends JFrame {
     public void updateLevel(int level) {
         levelLabel.setText("Level: " + level);
     }
-
 
     protected void gameKeyboardControls() {
         InputMap keyInput = this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -91,58 +99,100 @@ public class GameScreen extends JFrame {
         keyInput.put(KeyStroke.getKeyStroke("UP"), "up");
         keyInput.put(KeyStroke.getKeyStroke("LEFT"), "left");
         keyInput.put(KeyStroke.getKeyStroke("P"), "pause");
+        keyInput.put(KeyStroke.getKeyStroke("A"), "toggleAI");
 
         keyActionMap.put("right", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (gameSettings.isGameSoundsOn()) {
-                    GameBlock.playMoveTurnMusic();
+                if (!useAI) {
+                    if (gameSettings.isGameSoundsOn()) {
+                        GameBlock.playMoveTurnMusic();
+                    }
+                    gameBoard.moveBlockRight();
                 }
-                gameBoard.moveBlockRight();
             }
         });
+
         keyActionMap.put("left", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (gameSettings.isGameSoundsOn()) {
-                    GameBlock.playMoveTurnMusic();
+                if (!useAI) {
+                    if (gameSettings.isGameSoundsOn()) {
+                        GameBlock.playMoveTurnMusic();
+                    }
+                    gameBoard.moveBlockLeft();
                 }
-                gameBoard.moveBlockLeft();
             }
         });
+
         keyActionMap.put("up", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (gameSettings.isGameSoundsOn()) {
-                    GameBlock.playMoveTurnMusic();
+                if (!useAI) {
+                    if (gameSettings.isGameSoundsOn()) {
+                        GameBlock.playMoveTurnMusic();
+                    }
+                    gameBoard.rotateBlockOnUpKeyPressed();
                 }
-                gameBoard.rotateBlockOnUpKeyPressed();
             }
         });
+
         keyActionMap.put("down", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (gameSettings.isGameSoundsOn()) {
-                    GameBlock.playMoveTurnMusic();
+                if (!useAI) {
+                    if (gameSettings.isGameSoundsOn()) {
+                        GameBlock.playMoveTurnMusic();
+                    }
+                    gameBoard.moveBlockDownFast();
                 }
-                gameBoard.moveBlockDownFast();
             }
         });
+
         keyActionMap.put("pause", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (threadClass.gamePaused) {
                     pauseLabel.setVisible(false);
-//                    System.out.println("(GameScreen) Game Resumed.");
                     threadClass.resumeGame();
                 } else {
-                    // Set up the label for the message
-                    pauseLabel.setVisible(true); // Toggle visibility
-                    System.out.println("(GameScreen) Game Paused.");
+                    pauseLabel.setVisible(true);
                     threadClass.pauseGame();
+                }
+            }
+        });
+
+        keyActionMap.put("toggleAI", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                useAI = !useAI;
+                if (useAI) {
+                    System.out.println("AI Control Enabled");
+                } else {
+                    System.out.println("AI Control Disabled");
                 }
             }
         });
     }
 
+    public void updateGame() {
+        if (useAI) {
+            Move bestMove = ai.findBestMove(gameBoard, gameBoard.getCurrentBlock());
+
+            for (int i = 0; i < bestMove.rotation; i++) {
+//                gameBoard.rotateBlockOnUpKeyPressed();
+            }
+
+            while (gameBoard.getBlockXGridPosition() < bestMove.column) {
+                System.out.println("gameBoard.getBlockXGridPosition(): < " + gameBoard.getBlockXGridPosition() + ":  bestMove.column" + bestMove.column);
+                gameBoard.moveBlockRight();
+            }
+            while (gameBoard.getBlockXGridPosition() > bestMove.column) {
+                System.out.println("gameBoard.getBlockXGridPosition(): > " + gameBoard.getBlockXGridPosition() + ":  bestMove.column" + bestMove.column);
+                gameBoard.moveBlockLeft();
+            }
+
+            gameBoard.moveBlockDownFast();
+        }
+    }
 }
