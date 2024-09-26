@@ -9,15 +9,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-public class MainMenuScreen extends JFrame{
+public class MainMenuScreen extends JFrame {
 
     // Setting Image Path Dynamically
     String basePath = new File("").getAbsolutePath();
     String pathToMenuIcon = basePath + "/src/src/resources/images/menuIcon.png";
-    GameSettings gameSettings =new GameSettings();
+    GameSettings gameSettings = new GameSettings();
 
-    public void showMainScreen(){
-        if(gameSettings.readSettingsFromJsonFile().isGameMusicOn()){
+    public void showMainScreen() {
+        if (gameSettings.readSettingsFromJsonFile().isGameMusicOn()) {
             System.out.println("Music Main M Screen");
             GameBlock.playBackGroundMusic();
         }
@@ -26,7 +26,7 @@ public class MainMenuScreen extends JFrame{
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (screen.width - width) / 2;
         int y = (screen.height - height) / 2;
-        setBounds(x,y,width,height);
+        setBounds(x, y, width, height);
 
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -45,13 +45,13 @@ public class MainMenuScreen extends JFrame{
         copyRightText.setForeground(Color.BLACK);
         copyRightText.setFont(new Font("SansSerif", Font.PLAIN, 15));
 
-        JPanel mainPanel = new JPanel(new GridLayout(6,1,10,10));
+        JPanel mainPanel = new JPanel(new GridLayout(6, 1, 10, 10));
         JButton playButton = new JButton("Play");
         playButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Ceases to exist once showScreen() finishes execution.
-                new GameScreen().showScreen();
+                new GameScreen();
                 dispose();
 //                System.out.println("(MainMenuScreen) GameScreen disposed.");
             }
@@ -95,7 +95,7 @@ public class MainMenuScreen extends JFrame{
         exitButton.setBackground(Color.lightGray);
         exitButton.setOpaque(true);
 
-        Dimension buttonSize = new Dimension(250,50);
+        Dimension buttonSize = new Dimension(250, 50);
         playButton.setPreferredSize(buttonSize);
         highScoresButton.setPreferredSize(buttonSize);
         configButton.setPreferredSize(buttonSize);

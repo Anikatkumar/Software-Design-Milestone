@@ -23,7 +23,6 @@ public class GameBoard extends JPanel {
     GameSettings gameSettings = new GameSettings();
     int blockXGridInitialPosition;
     int blockYGridInitialPosition;
-    private int lastLevelThreshold = 0;
     private final Color[][] settledBlocks;
     private Color[] blockColors = {Color.CYAN, Color.GREEN, Color.ORANGE, Color.yellow, Color.red, Color.GRAY, Color.pink};
     private Color newBlockColorSelectedAtRandom;
@@ -34,17 +33,10 @@ public class GameBoard extends JPanel {
     private int linesErased = 0;
     private GameScreen gameScreen;
 
-    // 2 Player Mode Changes
-    private String playerNumber = "1";
-    private String playerType = "Human";
-    private JPanel createInfoPanel;
-    private JLabel currentLevelLabel;
-    private JLabel linesErasedLabel = new JLabel("Lines Erased: 0", JLabel.CENTER);
-    private JLabel scoreLabel = new JLabel("Score: 0", JLabel.CENTER);
-
     // New
     private InfoBoard infoBoard = new InfoBoard();
     public JPanel infoPanel;
+    String playerNum;
 
 //        public int[][][] shapes = {
 //                {{1, 0}, {1, 0}, {1, 1}},   // L
@@ -71,13 +63,14 @@ public class GameBoard extends JPanel {
 
     public GameBoard(GameScreen gameScreen, String playerNum) {
         this.gameScreen = gameScreen;
+        this.playerNum = playerNum;
 
         // Read settings from JSON or other source
         gameSettings = new GameSettings().readSettingsFromJsonFile();
 
         // Initialize number of columns and rows from GameSettings
         this.noOfColumns = gameSettings.getFieldWidth();
-        this.noOfRows = gameSettings.getFieldHeight()-2;      // Determine the number of rows from GameSettings
+        this.noOfRows = gameSettings.getFieldHeight();  // Determine the number of rows from GameSettings
         this.setBackground(Color.white);
         this.setBorder(BorderFactory.createLineBorder(Color.black));
 
@@ -112,16 +105,21 @@ public class GameBoard extends JPanel {
 
         // Calculate new block size based on the smaller dimension
         blockSize = Math.min(newWidth / noOfColumns, newHeight / noOfRows);
-        System.out.println("blockSize: " + blockSize);
+        System.out.println("(Adjust Board Size) Block Size: " + blockSize);
 
         // Recalculate the preferred size of the panel based on the block size and number of rows/columns
         int preferredWidth = blockSize * noOfColumns;
         int preferredHeight = blockSize * noOfRows;
         this.setPreferredSize(new Dimension(preferredWidth, preferredHeight));
 
+        int bottomBorderWidth = this.getHeight() - preferredHeight;
+        this.setBorder(BorderFactory.createMatteBorder(1, 1, bottomBorderWidth > 0 ? bottomBorderWidth : 1, 1, Color.BLACK));
+
         // Repaint the panel with the updated sizes
         revalidate();  // Ensure the layout is refreshed
         repaint();
+
+        System.out.println("(Adjust Board Size) Player" + this.playerNum + " Width: " + this.getWidth() + ", Height: " + this.getHeight());
     }
 
     public void initializeThread(DelayClass thread) {
@@ -227,7 +225,6 @@ public class GameBoard extends JPanel {
         } else if (rowsErased == 4) {
             score += 1000;
         }
-        //System.out.println("Updated score: " + score);
 
         infoBoard.updateScore(score);
     }
@@ -242,24 +239,12 @@ public class GameBoard extends JPanel {
         }
     }
 
-
-    //        public Color createNewBlock() {
-//            Random r = new Random();
-//            int randomNumber = r.nextInt(shapes.length);
-//
-//            currentShape = shapes[randomNumber];
-//            newBlockColorSelectedAtRandom = blockColors[r.nextInt(blockColors.length)];
-//            System.out.println("New Shape: " + newBlockColorSelectedAtRandom.toString() + " " + this.shapeNames[randomNumber]);
-//
-//            gameBlock = new GameBlock(currentShape, newBlockColorSelectedAtRandom);
-//            blockXGridInitialPosition = 9;
-//            blockYGridInitialPosition = -gameBlock.getBlockShape().length;
-//            return newBlockColorSelectedAtRandom;
-//        }
     public Color createNewBlock() {
         BlockFactory blockFactory = BlockFactoryProducer.getRandomBlock();
         gameBlock = blockFactory.createBlock(); // Use factory to create the block
-        blockXGridInitialPosition = noOfColumns / 2;  // Reset block's initial position
+
+        // Position new block to the center of the GameBoard
+        blockXGridInitialPosition = (noOfColumns / 2) - 1;
         blockYGridInitialPosition = -gameBlock.getBlockShape().length;
         return gameBlock.getBlockColor();
     }

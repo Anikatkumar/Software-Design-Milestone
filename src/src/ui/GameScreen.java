@@ -56,6 +56,17 @@ public class GameScreen extends JFrame {
 
         this.pack();
         this.setVisible(true);
+
+
+        if (!gameSettings.isExtendModeOn()) {
+            // One Player Mode Screen Settings
+            gameDisplayFacade.showScreen(this, 700, 700);
+        } else {
+            // Two Player Mode Screen Settings
+            int screenWidth = ((gameBoard.getWidth() + 99) / 100) * 100; // Round Up to the Nearest Hundreds
+            gameDisplayFacade.showScreen(this, gameBoard.getWidth() * 3, 700);
+        }
+
     }
 
     public void onePlayerMode() {
@@ -95,10 +106,11 @@ public class GameScreen extends JFrame {
     public void twoPlayerMode() {
         System.out.println("(GameScreen) Two Player Mode");
         gameBoard = new GameBoard(this, "1");
-        gameBoard.setPreferredSize(new Dimension(500, getHeight()));
+        System.out.println("(GameScreen) Initial GameBoard Height: " + gameBoard.getHeight() + " GameBoard Width: " + gameBoard.getWidth());
+        gameBoard.setPreferredSize(new Dimension(390, getHeight()));
 
         gameBoard2 = new GameBoard(this, "2");
-        gameBoard2.setPreferredSize(new Dimension(500, getHeight()));
+        gameBoard2.setPreferredSize(new Dimension(390, getHeight()));
 
         JPanel infoPanel = gameBoard.infoPanel;
         JPanel infoPanel2 = gameBoard2.infoPanel;
@@ -120,15 +132,15 @@ public class GameScreen extends JFrame {
         gameBoard.add(pauseLabel);
         gameBoard2.add(pauseLabel2);
 
-        // Adjust Window Size
-        int width = 750;
-        int height = 550;
-        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screen.width - width) / 2;
-        int y = (screen.height - height) / 2;
-
-        System.out.println("Center Panel Width: " + centerPanel.getHeight());
-        this.setBounds(x, y, 1000, centerPanel.getHeight());
+//        // Adjust Window Size
+//        int width = 750;
+//        int height = 550;
+//        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+//        int x = (screen.width - width) / 2;
+//        int y = (screen.height - height) / 2;
+//
+//        System.out.println("Center Panel Width: " + centerPanel.getHeight());
+//        this.setBounds(x, y, 1000, centerPanel.getHeight());
 
         threadClass = new DelayClass(gameBoard, this);
         System.out.println("(GameScreen) GameBoard Thread 1 started::" + threadClass.getName());
@@ -176,24 +188,6 @@ public class GameScreen extends JFrame {
         musicLabel.repaint();
     }
 
-   /* public void showScreen() {
-        //GameScreen gameScreen = new GameScreen();
-//        int width = 750;
-        int width = 700;
-        int height = 700;
-        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screen.width - width) / 2;
-        int y = (screen.height - height) / 2;
-        this.setBounds(x, y, width, height);
-        this.setVisible(true);
-        this.setTitle("Play");
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    } */
-   // Refactored showScreen using Facade
-   public void showScreen() {
-       gameDisplayFacade.showScreen(this, 700, 700);
-   }
-
     protected void gameKeyboardControls() {
         InputMap keyInput = this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap keyActionMap = this.getRootPane().getActionMap();
@@ -208,11 +202,11 @@ public class GameScreen extends JFrame {
         keyInput.put(KeyStroke.getKeyStroke("typed ."), "P2 right");
         keyInput.put(KeyStroke.getKeyStroke("typed ,"), "P2 left");
         keyInput.put(KeyStroke.getKeyStroke("typed l"), "P2 rotate");
-      //  keyInput.put(KeyStroke.getKeyStroke("pressed SPACE"), "P2 downFast");
+        //  keyInput.put(KeyStroke.getKeyStroke("pressed SPACE"), "P2 downFast");
 //        keyInput.put(KeyStroke.getKeyStroke("SPACE"), "Space-downFast");
         this.setFocusable(true);
         this.requestFocusInWindow();
-        keyInput.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,0,false),"spacePressed");
+        keyInput.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), "spacePressed");
         // Player 1 Actions
         keyActionMap.put("P1 right", new AbstractAction() {
             @Override
