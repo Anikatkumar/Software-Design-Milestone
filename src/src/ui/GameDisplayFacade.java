@@ -1,7 +1,8 @@
 package ui;
+
 import javax.swing.*;
 import java.awt.*;
-import ui.GameScreen;
+
 public class GameDisplayFacade {
     public void showScreen(GameScreen gameScreen, int width, int height) {
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
