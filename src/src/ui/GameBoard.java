@@ -38,6 +38,10 @@ public class GameBoard extends JPanel {
     public JPanel infoPanel;
     String playerNum;
 
+    // Game Block Sequence Pointer
+    private int sequenceID = 0;
+
+
 //        public int[][][] shapes = {
 //                {{1, 0}, {1, 0}, {1, 1}},   // L
 //                {{1, 1, 1}},                // Straight Line
@@ -241,7 +245,15 @@ public class GameBoard extends JPanel {
 
     public Color createNewBlock() {
         BlockFactory blockFactory = BlockFactoryProducer.getRandomBlock();
+        System.out.println("blockFactory: " + blockFactory);
         gameBlock = blockFactory.createBlock(); // Use factory to create the block
+
+        // Game Block Sequence in sync for Two Player Mode
+        if (gameSettings.isExtendModeOn()) {
+            gameScreen.gameBlockSequence.add(gameBlock);
+            gameBlock = gameScreen.gameBlockSequence.get(sequenceID);
+            this.sequenceID++;
+        }
 
         // Position new block to the center of the GameBoard
         blockXGridInitialPosition = (noOfColumns / 2) - 1;
