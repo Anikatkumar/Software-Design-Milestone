@@ -101,6 +101,7 @@ public class GameScores {
 
 
 
+
     public void writeListOfScoresInJSONFile(List<GameScores> gameScores) {
         Gson json = new Gson();
         try (FileWriter writer = new FileWriter("Scores.json")) {
@@ -110,7 +111,13 @@ public class GameScores {
             System.out.println("Error Saving List of Scores: " + e.getMessage());
         }
     }
-
+    public void clearScores() {
+        try (FileWriter writer = new FileWriter("scores.json")) {
+            writer.write("[]"); // Write an empty JSON array to clear the file
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 
