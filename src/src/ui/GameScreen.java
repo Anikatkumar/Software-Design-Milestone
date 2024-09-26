@@ -1,186 +1,78 @@
 package ui;
 
+import AI.Move;
+import AI.TetrisAI;
 import settings.GameSettings;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
+import java.awt.event.ActionListener;
 
 public class GameScreen extends JFrame {
     private JPanel GameBoard;
-    GameSettings gameSettings = new GameSettings();
     private JButton Back;
-    private BackButton backButton;
-    protected JLabel pauseLabel, pauseLabel2;
-    private JLabel musicLabel;
-
-    // Player 1 Settings
     private GameBoard gameBoard;
-    protected DelayClass threadClass;
+    private BackButton backButton;
+    private JLabel scoreLabel;
+    private JLabel levelLabel;
+    private JLabel pauseLabel;
+    private DelayClass threadClass;
+    private PlayLabel playLabel;
+    GameSettings gameSettings = new GameSettings();
 
-    // Player 2 Settings
-    private GameBoard gameBoard2;
-    protected DelayClass threadClass2;
-
-    // Facade for display
-    private GameDisplayFacade gameDisplayFacade;
+    // AI variable
+    private TetrisAI ai;
+    private boolean useAI = false;  // Toggle this to switch between AI and player
 
     public GameScreen() {
-        System.out.println("GAME SCREEN DISPLAY");
         gameSettings = gameSettings.readSettingsFromJsonFile();
-        gameDisplayFacade = new GameDisplayFacade(); // Initialize the facade
-        // Pause Label
-        this.pauseLabel = new JLabel("Press 'P' again to resume the game   ", JLabel.RIGHT);
-        this.pauseLabel.setVisible(false);
-        this.pauseLabel.setFont(new Font("Arial", Font.ITALIC, 10));  // Customize font size and style
-        // Pause Label 2
-        this.pauseLabel2 = new JLabel("Press 'P' again to resume the game   ", JLabel.RIGHT);
-        this.pauseLabel2.setVisible(false);
-        this.pauseLabel2.setFont(new Font("Arial", Font.ITALIC, 10));  // Customize font size and style
+        gameBoard = new GameBoard(20);
+        ai = new TetrisAI();
 
-        JPanel titlePanel = createTitlePanel();
+        playLabel = new PlayLabel();
+
+        pauseLabel = new JLabel("Press 'P' again to resume the game   ", JLabel.RIGHT);
+        pauseLabel.setVisible(false);
+        pauseLabel.setFont(new Font("Arial", Font.ITALIC, 10));
+
         this.setLayout(new BorderLayout());
-        this.add(titlePanel, BorderLayout.NORTH);
+        this.add(gameBoard);
+        this.add(playLabel);
 
-        if (!gameSettings.isExtendModeOn()) {
-            this.onePlayerMode();
-        } else {
-            this.twoPlayerMode();
-        }
+        gameBoard.add(pauseLabel);
 
-        backButton = new BackButton(this);
+
+        threadClass = new DelayClass(gameBoard, this);
+        threadClass.start();
+
+        gameBoard.initializeThread(threadClass);
+
+        backButton = new BackButton(this, threadClass, this);
         this.add(backButton, BorderLayout.SOUTH);
 
+        scoreLabel = new JLabel("Score: 0", JLabel.LEFT);
+        levelLabel = new JLabel("Level: 1", JLabel.LEFT);
+
+        add(scoreLabel, BorderLayout.WEST);
+        add(levelLabel, BorderLayout.BEFORE_FIRST_LINE);
+        scoreLabel.setVisible(true);
+        levelLabel.setVisible(true);
+
+        gameBoard.initializeAI();
         gameKeyboardControls();
-
-        this.pack();
-        this.setVisible(true);
+    }
+    public void setAIEnabled(boolean enabled) {
+        this.useAI = enabled;
     }
 
-    public void onePlayerMode() {
-        System.out.println("(GameScreen) One Player Mode)");
-        gameBoard = new GameBoard(this, "1");
-
-        JPanel infoPanel = gameBoard.infoPanel;
-
-        // To display Info Panel and Game Board Panel Side by Side
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-
-        JPanel containerPanel = new JPanel();
-        containerPanel.setLayout(new GridLayout(0, 2));
-        containerPanel.setBackground(Color.magenta);
-        containerPanel.add(infoPanel);
-
-        gameBoard.setPreferredSize(new Dimension(500, getHeight()));
-
-        containerPanel.add(gameBoard);
-        centerPanel.add(containerPanel);
-        this.add(centerPanel, BorderLayout.CENTER);
-        gameBoard.add(pauseLabel);
-
-        threadClass = new DelayClass(gameBoard, this);
-        System.out.println("(GameScreen) GameBoard Thread 1 started::" + threadClass.getName());
-        threadClass.start();
-
-        gameBoard.initializeThread(threadClass);
-
-        gameKeyboardControls();
-
-        this.pack();
-        this.setVisible(true);
+    public boolean isAIEnabled() {
+        return this.useAI;
     }
 
-    public void twoPlayerMode() {
-        System.out.println("(GameScreen) Two Player Mode");
-        gameBoard = new GameBoard(this, "1");
-        gameBoard.setPreferredSize(new Dimension(500, getHeight()));
-
-        gameBoard2 = new GameBoard(this, "2");
-        gameBoard2.setPreferredSize(new Dimension(500, getHeight()));
-
-        JPanel infoPanel = gameBoard.infoPanel;
-        JPanel infoPanel2 = gameBoard2.infoPanel;
-
-        JPanel containerPanel = new JPanel();
-        containerPanel.setLayout(new GridLayout(0, 4));
-        containerPanel.setBackground(Color.magenta);
-        containerPanel.add(infoPanel);
-        containerPanel.add(gameBoard);
-        containerPanel.add(infoPanel2);
-        containerPanel.add(gameBoard2);
-
-        // To display Info Panel and Game Board Panel Side by Side
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        centerPanel.add(containerPanel);
-
-        this.add(centerPanel, BorderLayout.CENTER);
-        gameBoard.add(pauseLabel);
-        gameBoard2.add(pauseLabel2);
-
-        // Adjust Window Size
-        int width = 750;
-        int height = 550;
-        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screen.width - width) / 2;
-        int y = (screen.height - height) / 2;
-
-        System.out.println("Center Panel Width: " + centerPanel.getHeight());
-        this.setBounds(x, y, 1000, centerPanel.getHeight());
-
-        threadClass = new DelayClass(gameBoard, this);
-        System.out.println("(GameScreen) GameBoard Thread 1 started::" + threadClass.getName());
-        threadClass.start();
-        threadClass2 = new DelayClass(gameBoard2, this);
-        System.out.println("(GameScreen) GameBoard Thread 2 started::" + threadClass2.getName());
-        threadClass2.start();
-
-        gameBoard.initializeThread(threadClass);
-        gameBoard2.initializeThread(threadClass2);
-
-        gameKeyboardControls();
-
-        this.pack();
-        this.setVisible(true);
-    }
-
-    private JPanel createTitlePanel() {
-        JPanel playPanel = new JPanel();
-        playPanel.setLayout(new GridLayout(2, 1));
-
-        JLabel playLabel = new JLabel("Tetris Play", JLabel.CENTER);
-        playLabel.setOpaque(true);
-        playLabel.setForeground(Color.BLACK);
-        playLabel.setFont(new Font("SansSerif", Font.BOLD, 30));
-
-        boolean musicStatus = gameSettings.isGameMusicOn();
-        boolean soundStatus = gameSettings.isGameSoundsOn();
-        musicLabel = new JLabel("Music: " + ((musicStatus) ? "ON" : "OFF") + "  Sound: " + ((soundStatus) ? "ON" : "OFF"), JLabel.CENTER);
-
-        playPanel.add(playLabel);
-        playPanel.add(musicLabel);
-
-        playPanel.setPreferredSize(new Dimension(150, 100));
-        playPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-
-        return playPanel;
-    }
-
-    public void updateMusicLabel() {
-        boolean musicStatus = gameSettings.isGameMusicOn();
-        boolean soundStatus = gameSettings.isGameSoundsOn();
-        musicLabel.setText("Music: " + ((musicStatus) ? "ON" : "OFF") + "  Sound: " + ((soundStatus) ? "ON" : "OFF"));
-        musicLabel.revalidate();
-        musicLabel.repaint();
-    }
-
-   /* public void showScreen() {
-        //GameScreen gameScreen = new GameScreen();
-//        int width = 750;
-        int width = 700;
-        int height = 700;
+    public void showScreen() {
+        int width = 600;
+        int height = 600;
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (screen.width - width) / 2;
         int y = (screen.height - height) / 2;
@@ -188,150 +80,119 @@ public class GameScreen extends JFrame {
         this.setVisible(true);
         this.setTitle("Play");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    } */
-   // Refactored showScreen using Facade
-   public void showScreen() {
-       gameDisplayFacade.showScreen(this, 700, 700);
-   }
+    }
+
+    public void updateScore(int score) {
+        scoreLabel.setText("Score: " + score);
+    }
+
+    public void updateLevel(int level) {
+        levelLabel.setText("Level: " + level);
+    }
 
     protected void gameKeyboardControls() {
         InputMap keyInput = this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap keyActionMap = this.getRootPane().getActionMap();
 
-        // Player 1 Controls
-        keyInput.put(KeyStroke.getKeyStroke("RIGHT"), "P1 right");
-        keyInput.put(KeyStroke.getKeyStroke("DOWN"), "P1 down");
-        keyInput.put(KeyStroke.getKeyStroke("UP"), "P1 up");
-        keyInput.put(KeyStroke.getKeyStroke("LEFT"), "P1 left");
-
-        // Player 2 Controls
-        keyInput.put(KeyStroke.getKeyStroke("typed ."), "P2 right");
-        keyInput.put(KeyStroke.getKeyStroke("typed ,"), "P2 left");
-        keyInput.put(KeyStroke.getKeyStroke("typed l"), "P2 rotate");
-      //  keyInput.put(KeyStroke.getKeyStroke("pressed SPACE"), "P2 downFast");
-//        keyInput.put(KeyStroke.getKeyStroke("SPACE"), "Space-downFast");
-        this.setFocusable(true);
-        this.requestFocusInWindow();
-        keyInput.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,0,false),"spacePressed");
-        // Player 1 Actions
-        keyActionMap.put("P1 right", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (gameSettings.isGameSoundsOn()) {
-                    GameBlock.playMoveTurnMusic();
-                }
-                gameBoard.moveBlockRight();
-            }
-        });
-        keyActionMap.put("P1 left", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (gameSettings.isGameSoundsOn()) {
-                    GameBlock.playMoveTurnMusic();
-                }
-                gameBoard.moveBlockLeft();
-            }
-        });
-        keyActionMap.put("P1 up", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (gameSettings.isGameSoundsOn()) {
-                    GameBlock.playMoveTurnMusic();
-                }
-                gameBoard.rotateBlockOnUpKeyPressed();
-            }
-        });
-        keyActionMap.put("P1 down", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gameBoard.moveBlockDownFast();
-            }
-        });
-
-        // Player 2 Actions
-        keyActionMap.put("P2 right", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gameBoard2.moveBlockRight();
-            }
-        });
-        keyActionMap.put("P2 left", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gameBoard2.moveBlockLeft();
-            }
-        });
-        keyActionMap.put("P2 rotate", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gameBoard2.rotateBlockOnUpKeyPressed();
-            }
-        });
-
-        keyActionMap.put("spacePressed", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Space-downFast triggered");
-                gameBoard2.moveBlockDownFast();
-            }
-        });
-
-
-        // General Game Controls (Pause, Music, Sound)
-        addGeneralGameControls(keyInput, keyActionMap);
-    }
-
-    private void addGeneralGameControls(InputMap keyInput, ActionMap keyActionMap) {
+        keyInput.put(KeyStroke.getKeyStroke("RIGHT"), "right");
+        keyInput.put(KeyStroke.getKeyStroke("DOWN"), "down");
+        keyInput.put(KeyStroke.getKeyStroke("UP"), "up");
+        keyInput.put(KeyStroke.getKeyStroke("LEFT"), "left");
         keyInput.put(KeyStroke.getKeyStroke("P"), "pause");
-        keyInput.put(KeyStroke.getKeyStroke("M"), "music");
-        keyInput.put(KeyStroke.getKeyStroke("S"), "sound");
+        keyInput.put(KeyStroke.getKeyStroke("A"), "toggleAI");
+
+        keyActionMap.put("right", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!useAI) {
+                    if (gameSettings.isGameSoundsOn()) {
+                        GameBlock.playMoveTurnMusic();
+                    }
+                    gameBoard.moveBlockRight();
+                }
+            }
+        });
+
+        keyActionMap.put("left", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!useAI) {
+                    if (gameSettings.isGameSoundsOn()) {
+                        GameBlock.playMoveTurnMusic();
+                    }
+                    gameBoard.moveBlockLeft();
+                }
+            }
+        });
+
+        keyActionMap.put("up", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!useAI) {
+                    if (gameSettings.isGameSoundsOn()) {
+                        GameBlock.playMoveTurnMusic();
+                    }
+                    gameBoard.rotateBlockOnUpKeyPressed();
+                }
+            }
+        });
+
+        keyActionMap.put("down", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!useAI) {
+                    if (gameSettings.isGameSoundsOn()) {
+                        GameBlock.playMoveTurnMusic();
+                    }
+                    gameBoard.moveBlockDownFast();
+                }
+            }
+        });
 
         keyActionMap.put("pause", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (threadClass.gamePaused) {
                     pauseLabel.setVisible(false);
-                    pauseLabel2.setVisible(false);
-                    System.out.println("(GameScreen) Game Resumed.");
                     threadClass.resumeGame();
-                    threadClass2.resumeGame();
                 } else {
-                    // Set up the label for the message
-                    pauseLabel.setVisible(true); // Toggle visibility
-                    pauseLabel2.setVisible(true); // Toggle visibility
-                    System.out.println("(GameScreen) Game Paused.");
+                    pauseLabel.setVisible(true);
                     threadClass.pauseGame();
-                    threadClass2.pauseGame();
                 }
-            }
-        });
-        // sound controls
-        keyActionMap.put("music", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gameSettings.setGameMusicOn(!gameSettings.isGameMusicOn());
-                gameSettings.writeSettingsIntoJsonFile(gameSettings);
-                if (gameSettings.isGameMusicOn()) {
-                    GameBlock.playBackGroundMusic();
-                } else {
-                    GameBlock.pauseBackGroundMusic();
-                }
-                updateMusicLabel();
             }
         });
 
-        keyActionMap.put("sound", new AbstractAction() {
+        keyActionMap.put("toggleAI", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                gameSettings.setGameSoundsOn(!gameSettings.isGameSoundsOn());
-                gameSettings.writeSettingsIntoJsonFile(gameSettings);
-                if (gameSettings.isGameSoundsOn()) {
-                    GameBlock.playMoveTurnMusic();
+                useAI = !useAI;
+                if (useAI) {
+                    System.out.println("AI Control Enabled");
                 } else {
-                    GameBlock.pauseGameSound();
+                    System.out.println("AI Control Disabled");
                 }
-                updateMusicLabel();
             }
         });
+    }
+
+    public void updateGame() {
+        if (useAI) {
+            Move bestMove = ai.findBestMove(gameBoard, gameBoard.getCurrentBlock());
+
+            for (int i = 0; i < bestMove.rotation; i++) {
+//                gameBoard.rotateBlockOnUpKeyPressed();
+            }
+
+            while (gameBoard.getBlockXGridPosition() < bestMove.column) {
+                System.out.println("gameBoard.getBlockXGridPosition(): < " + gameBoard.getBlockXGridPosition() + ":  bestMove.column" + bestMove.column);
+                gameBoard.moveBlockRight();
+            }
+            while (gameBoard.getBlockXGridPosition() > bestMove.column) {
+                System.out.println("gameBoard.getBlockXGridPosition(): > " + gameBoard.getBlockXGridPosition() + ":  bestMove.column" + bestMove.column);
+                gameBoard.moveBlockLeft();
+            }
+
+            gameBoard.moveBlockDownFast();
+        }
     }
 }

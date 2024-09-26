@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Comparator;
 import java.util.List;
 
 public class HighScoresScreen extends JFrame {
@@ -36,8 +35,11 @@ public class HighScoresScreen extends JFrame {
 
         highScoresPanel.add(nameHeader);
         highScoresPanel.add(scoreHeader);
+
+//        String[] name = {"Sakshi", "Anikat", "Angelina", "Harpireet", "Neeraj", "John", "Lee", "Harry", "Kevin", "Juan"};
+//        String[] score = {"9000", "8000", "7000", "6000", "5000", "5500", "4000", "3000", "2000", "1000"};
+
         List<GameScores> gameScoresPlayersInfo = gameScores.readScores();
-        gameScoresPlayersInfo.sort(Comparator.comparingInt(GameScores::getScore).reversed());
         for (GameScores gameScore : gameScoresPlayersInfo) {
             int score = gameScore.getScore();
             String name = gameScore.getPlayerName();
@@ -81,21 +83,14 @@ public class HighScoresScreen extends JFrame {
 
         JPanel buttonPanel = getButtonPanel(frame);
         frame.add(buttonPanel, BorderLayout.SOUTH);
-        //
-        JButton clearScoresButton = new JButton("Clear Scores");
-        clearScoresButton.setBackground(Color.lightGray);
-        clearScoresButton.setOpaque(true);
 
-        //
         JLabel titleLabel = new JLabel("High Scores", JLabel.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 35));
         titleLabel.setOpaque(true);
         titleLabel.setForeground(Color.BLACK);
 
         frame.add(titleLabel, BorderLayout.NORTH);
-        //
-        frame.add(clearScoresButton, BorderLayout.EAST) ;
-        //
+
         frame.setVisible(true);
     }
     private static JPanel getButtonPanel(JFrame frame) {
