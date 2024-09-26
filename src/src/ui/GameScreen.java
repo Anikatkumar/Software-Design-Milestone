@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameScreen extends JFrame {
     private JPanel GameBoard;
@@ -22,6 +24,8 @@ public class GameScreen extends JFrame {
     // Player 2 Settings
     private GameBoard gameBoard2;
     protected DelayClass threadClass2;
+    // Game Block Sequence
+    protected List<GameBlock> gameBlockSequence = new ArrayList<>();
 
     // Facade for display
     private GameDisplayFacade gameDisplayFacade;
@@ -30,6 +34,7 @@ public class GameScreen extends JFrame {
         System.out.println("GAME SCREEN DISPLAY");
         gameSettings = gameSettings.readSettingsFromJsonFile();
         gameDisplayFacade = new GameDisplayFacade(); // Initialize the facade
+
         // Pause Label
         this.pauseLabel = new JLabel("Press 'P' again to resume the game   ", JLabel.RIGHT);
         this.pauseLabel.setVisible(false);
@@ -132,17 +137,7 @@ public class GameScreen extends JFrame {
         gameBoard.add(pauseLabel);
         gameBoard2.add(pauseLabel2);
 
-//        // Adjust Window Size
-//        int width = 750;
-//        int height = 550;
-//        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-//        int x = (screen.width - width) / 2;
-//        int y = (screen.height - height) / 2;
-//
-//        System.out.println("Center Panel Width: " + centerPanel.getHeight());
-//        this.setBounds(x, y, 1000, centerPanel.getHeight());
-
-        // multithread
+        // Multi Threading
         threadClass = new DelayClass(gameBoard, this);
         System.out.println("(GameScreen) GameBoard Thread 1 started::" + threadClass.getName());
         threadClass.start();
