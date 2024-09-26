@@ -130,6 +130,7 @@ public class GameScreen extends JFrame {
         System.out.println("Center Panel Width: " + centerPanel.getHeight());
         this.setBounds(x, y, 1000, centerPanel.getHeight());
 
+        // multithread
         threadClass = new DelayClass(gameBoard, this);
         System.out.println("(GameScreen) GameBoard Thread 1 started::" + threadClass.getName());
         threadClass.start();
@@ -176,23 +177,23 @@ public class GameScreen extends JFrame {
         musicLabel.repaint();
     }
 
-   /* public void showScreen() {
-        //GameScreen gameScreen = new GameScreen();
-//        int width = 750;
-        int width = 700;
-        int height = 700;
-        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screen.width - width) / 2;
-        int y = (screen.height - height) / 2;
-        this.setBounds(x, y, width, height);
-        this.setVisible(true);
-        this.setTitle("Play");
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    } */
-   // Refactored showScreen using Facade
-   public void showScreen() {
-       gameDisplayFacade.showScreen(this, 700, 700);
-   }
+    /* public void showScreen() {
+         //GameScreen gameScreen = new GameScreen();
+ //        int width = 750;
+         int width = 700;
+         int height = 700;
+         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+         int x = (screen.width - width) / 2;
+         int y = (screen.height - height) / 2;
+         this.setBounds(x, y, width, height);
+         this.setVisible(true);
+         this.setTitle("Play");
+         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+     } */
+    // Refactored showScreen using Facade
+    public void showScreen() {
+        gameDisplayFacade.showScreen(this, 700, 700);
+    }
 
     protected void gameKeyboardControls() {
         InputMap keyInput = this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -208,11 +209,11 @@ public class GameScreen extends JFrame {
         keyInput.put(KeyStroke.getKeyStroke("typed ."), "P2 right");
         keyInput.put(KeyStroke.getKeyStroke("typed ,"), "P2 left");
         keyInput.put(KeyStroke.getKeyStroke("typed l"), "P2 rotate");
-      //  keyInput.put(KeyStroke.getKeyStroke("pressed SPACE"), "P2 downFast");
+        //  keyInput.put(KeyStroke.getKeyStroke("pressed SPACE"), "P2 downFast");
 //        keyInput.put(KeyStroke.getKeyStroke("SPACE"), "Space-downFast");
         this.setFocusable(true);
         this.requestFocusInWindow();
-        keyInput.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,0,false),"spacePressed");
+        keyInput.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), "spacePressed");
         // Player 1 Actions
         keyActionMap.put("P1 right", new AbstractAction() {
             @Override
@@ -248,34 +249,35 @@ public class GameScreen extends JFrame {
             }
         });
 
-        // Player 2 Actions
-        keyActionMap.put("P2 right", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gameBoard2.moveBlockRight();
-            }
-        });
-        keyActionMap.put("P2 left", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gameBoard2.moveBlockLeft();
-            }
-        });
-        keyActionMap.put("P2 rotate", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gameBoard2.rotateBlockOnUpKeyPressed();
-            }
-        });
+        if (gameSettings.isExtendModeOn()) {
+            // Player 2 Actions
+            keyActionMap.put("P2 right", new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    gameBoard2.moveBlockRight();
+                }
+            });
+            keyActionMap.put("P2 left", new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    gameBoard2.moveBlockLeft();
+                }
+            });
+            keyActionMap.put("P2 rotate", new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    gameBoard2.rotateBlockOnUpKeyPressed();
+                }
+            });
 
-        keyActionMap.put("spacePressed", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Space-downFast triggered");
-                gameBoard2.moveBlockDownFast();
-            }
-        });
-
+            keyActionMap.put("spacePressed", new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("Space-downFast triggered");
+                    gameBoard2.moveBlockDownFast();
+                }
+            });
+        }
 
         // General Game Controls (Pause, Music, Sound)
         addGeneralGameControls(keyInput, keyActionMap);

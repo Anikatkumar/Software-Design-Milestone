@@ -41,10 +41,11 @@ public class BackButton extends JButton {
                 // No - Do nothing. Continue with game
 
                 if (!gameScreen.threadClass.gameOver() || (extendedModeOn && !gameScreen.threadClass2.gameOver())) {
+//                if (!gameScreen.threadClass.gameOver() || (extendedModeOn )) {
                     int response = JOptionPane.showConfirmDialog(
                             gameScreen,
                             "Are you sure you want to stop the current game?",
-                            "Stop Game",
+                            "Quit Game",
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE
                     );

@@ -77,7 +77,7 @@ public class GameBoard extends JPanel {
 
         // Initialize number of columns and rows from GameSettings
         this.noOfColumns = gameSettings.getFieldWidth();
-        this.noOfRows = gameSettings.getFieldHeight()-2;      // Determine the number of rows from GameSettings
+        this.noOfRows = gameSettings.getFieldHeight() - 2;      // Determine the number of rows from GameSettings
         this.setBackground(Color.white);
         this.setBorder(BorderFactory.createLineBorder(Color.black));
 
@@ -266,21 +266,22 @@ public class GameBoard extends JPanel {
 
 
     public void paintBlock(Graphics g) {
-        int[][] drawingShape = gameBlock.getBlockShape();
-        for (int i = 0; i < gameBlock.getBlockShape().length; i++) {
-            for (int j = 0; j < gameBlock.getBlockShape()[0].length; j++) {
-                if (drawingShape[i][j] == 1) {
-                    xAxis = (blockXGridInitialPosition + j) * blockSize;
-                    yAxis = (blockYGridInitialPosition + i) * blockSize;
+        if (gameBlock != null) {
+            int[][] drawingShape = gameBlock.getBlockShape();
+            for (int i = 0; i < gameBlock.getBlockShape().length; i++) {
+                for (int j = 0; j < gameBlock.getBlockShape()[0].length; j++) {
+                    if (drawingShape[i][j] == 1) {
+                        xAxis = (blockXGridInitialPosition + j) * blockSize;
+                        yAxis = (blockYGridInitialPosition + i) * blockSize;
 //                    System.out.println("Painting Bloc: " + gameBlock.getBlockColor().toString());
-                    g.setColor(gameBlock.getBlockColor());
+                        g.setColor(gameBlock.getBlockColor());
 //                    g.setColor(newBlockColorSelectedAtRandom);
-                    g.fillRect(xAxis, yAxis, blockSize, blockSize);
-                    g.setColor(Color.black);
-                    g.drawRect(xAxis, yAxis, blockSize, blockSize);
+                        g.fillRect(xAxis, yAxis, blockSize, blockSize);
+                        g.setColor(Color.black);
+                        g.drawRect(xAxis, yAxis, blockSize, blockSize);
+                    }
                 }
             }
-
         }
     }
 
