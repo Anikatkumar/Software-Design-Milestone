@@ -77,7 +77,7 @@ public class GameBoard extends JPanel {
 
         // Initialize number of columns and rows from GameSettings
         this.noOfColumns = gameSettings.getFieldWidth();
-        this.noOfRows = gameSettings.getFieldHeight();      // Determine the number of rows from GameSettings
+        this.noOfRows = gameSettings.getFieldHeight()-2;      // Determine the number of rows from GameSettings
         this.setBackground(Color.white);
         this.setBorder(BorderFactory.createLineBorder(Color.black));
 
