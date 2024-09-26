@@ -59,6 +59,10 @@ public class GameScores {
         }
     }
 
+
+
+
+
     public GameScores readScoresFromJsonFile() {
         GameScores gameScores = null;
         try (FileReader reader = new FileReader("Scores.json")) {
@@ -85,4 +89,29 @@ public class GameScores {
             return new ArrayList<>();
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    public void writeListOfScoresInJSONFile(List<GameScores> gameScores) {
+        Gson json = new Gson();
+        try (FileWriter writer = new FileWriter("Scores.json")) {
+            json.toJson(gameScores, writer);
+            System.out.println("List of Scores saved successfully!");
+        } catch (IOException e) {
+            System.out.println("Error Saving List of Scores: " + e.getMessage());
+        }
+    }
+
+
+
+
 }

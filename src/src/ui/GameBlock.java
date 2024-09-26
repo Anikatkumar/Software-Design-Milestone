@@ -50,6 +50,13 @@ public class GameBlock {
     public static void playGameFinishMusic(){
         soundPlayer.playGameFinishMusic();
     }
+    public static void pauseBackGroundMusic(){
+        soundPlayer.pauseBackgroundMusic();
+    }
+
+    public static void pauseGameSound(){
+        soundPlayer.pauseGameSounds();
+    }
 
 
 
