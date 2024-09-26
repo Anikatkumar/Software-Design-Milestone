@@ -1,138 +1,134 @@
 package ui;
 
-import AI.BoardEvaluator;
-import AI.TetrisAI;
+import blockFactories.BlockFactory;
+import blockFactories.BlockFactoryProducer;
 import settings.GameSettings;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Random;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
-import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 
 public class GameBoard extends JPanel {
     private final int noOfRows;
     private final int noOfColumns;
-    private final int blockSize;
+    private int blockSize;
     private GameBlock gameBlock;
-    private JLabel playLabel = new JLabel("Play");
     int xAxis;
     int yAxis;
+    int temp = 0;
     private DelayClass threadClass;
     GameSettings gameSettings = new GameSettings();
     int blockXGridInitialPosition;
     int blockYGridInitialPosition;
+    private int lastLevelThreshold = 0;
     private final Color[][] settledBlocks;
     private Color[] blockColors = {Color.CYAN, Color.GREEN, Color.ORANGE, Color.yellow, Color.red, Color.GRAY, Color.pink};
     private Color newBlockColorSelectedAtRandom;
     Color createdNewBlockWithColor;
-    private GameBlock currentBlock;
+    public int score = 0;
+    private int initialLevel;
+    private int currentLevel;
+    private int linesErased = 0;
+    private GameScreen gameScreen;
 
-    private TetrisAI tetrisAI;  // New AI instance
-    private BoardEvaluator boardEvaluator;  // Evaluator for the board
+    // 2 Player Mode Changes
+    private String playerNumber = "1";
+    private String playerType = "Human";
+    private JPanel createInfoPanel;
+    private JLabel currentLevelLabel;
+    private JLabel linesErasedLabel = new JLabel("Lines Erased: 0", JLabel.CENTER);
+    private JLabel scoreLabel = new JLabel("Score: 0", JLabel.CENTER);
 
-    public int[][][] shapes = {
-                {{1, 0}, {1, 0}, {1, 1}},   // L
-            {{1, 1, 1}},                // Straight Line
-            {{1, 1, 0}, {0, 1, 1}},     // Z
-            {{1, 1, 1}, {0, 1, 0}},     // T
-            {{1, 1}, {1, 1}},           // Box
-            {{0, 1}, {0, 1}, {1, 1}},   // Reverse L
-            {{0, 1, 1}, {1, 1, 0}}      // Reverse Z
-    };
+    // New
+    private InfoBoard infoBoard = new InfoBoard();
+    public JPanel infoPanel;
 
-    public String[] shapeNames = {
-            "L",                // L
-            "Straight Line",    // Straight Line
-            "Z",                // Z
-            "T",                // T
-            "Box",              // Box
-            "Reverse L",        // Reverse L
-            "Reverse Z"         // Reverse Z
-    };
+//        public int[][][] shapes = {
+//                {{1, 0}, {1, 0}, {1, 1}},   // L
+//                {{1, 1, 1}},                // Straight Line
+//                {{1, 1, 0}, {0, 1, 1}},     // Z
+//                {{1, 1, 1}, {0, 1, 0}},     // T
+//                {{1, 1}, {1, 1}},           // Box
+//                {{0, 1}, {0, 1}, {1, 1}},   // Reverse L
+//                {{0, 1, 1}, {1, 1, 0}}      // Reverse Z
+//        };
+//
+//        public String[] shapeNames = {
+//                "L",                // L
+//                "Straight Line",    // Straight Line
+//                "Z",                // Z
+//                "T",                // T
+//                "Box",              // Box
+//                "Reverse L",        // Reverse L
+//                "Reverse Z"         // Reverse Z
+//        };
+//
+//        public int[][] currentShape;
 
-    public int[][] currentShape;
 
+    public GameBoard(GameScreen gameScreen, String playerNum) {
+        this.gameScreen = gameScreen;
 
-    public GameBoard(int noOfColumns) {
-        gameSettings = gameSettings.readSettingsFromJsonFile();
-        this.noOfColumns = noOfColumns;
-        int boardHeight = 390;
-        int boardWidth = 300;
-        this.setBounds(150, 60, boardWidth, boardHeight);
+        // Read settings from JSON or other source
+        gameSettings = new GameSettings().readSettingsFromJsonFile();
+
+        // Initialize number of columns and rows from GameSettings
+        this.noOfColumns = gameSettings.getFieldWidth();
+        this.noOfRows = gameSettings.getFieldHeight();      // Determine the number of rows from GameSettings
         this.setBackground(Color.white);
         this.setBorder(BorderFactory.createLineBorder(Color.black));
-        blockSize = (boardWidth / noOfColumns);
-        noOfRows = boardHeight / blockSize;
+
+        // Initialized. Stores the blocks that have settled.
         settledBlocks = new Color[noOfRows][noOfColumns];
-        GameBlock newBlock = createNewBlock();
-        createdNewBlockWithColor = newBlock.getBlockColor();
-        this.tetrisAI = new TetrisAI();  // Initialize the AI
-        this.boardEvaluator = new BoardEvaluator();  // Initialize board evaluator
-        currentBlock = createNewBlock();
-//        System.out.println("(Game Board) New Block Created. ");
+
+        // Add component listener to detect resizing
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                // Adjust block size based on new panel size, but keep noOfRows from gameSettings
+                adjustBoardSize();
+            }
+        });
+
+        // Create a new block when the game board is initialized
+        createdNewBlockWithColor = createNewBlock();
+        initialLevel = gameSettings.getGameLevel();
+        currentLevel = initialLevel;
+
+        // Creates the Info Board for this Game Board
+        infoPanel = infoBoard.createInfoPanel(playerNum);
     }
 
-    public int getBlockXGridPosition() {
-        return blockXGridInitialPosition;
-    }
+    /**
+     * Adjust block size when the panel is resized but keep the number of rows static according to gameSettings
+     */
+    private void adjustBoardSize() {
+        // Get current width and height of the panel
+        int newWidth = getWidth();
+        int newHeight = getHeight();
 
-    // Add this method to get the Y position of the current block, if needed
-    public int getBlockYGridPosition() {
-        return blockYGridInitialPosition;
-    }
-    public void initializeAI() {
-        this.tetrisAI = new TetrisAI();
-        this.boardEvaluator = new BoardEvaluator();
-    }
-    public GameBlock getCurrentBlock() {
-        return currentBlock;  // For the AI to simulate moves
+        // Calculate new block size based on the smaller dimension
+        blockSize = Math.min(newWidth / noOfColumns, newHeight / noOfRows);
+        System.out.println("blockSize: " + blockSize);
+
+        // Recalculate the preferred size of the panel based on the block size and number of rows/columns
+        int preferredWidth = blockSize * noOfColumns;
+        int preferredHeight = blockSize * noOfRows;
+        this.setPreferredSize(new Dimension(preferredWidth, preferredHeight));
+
+        // Repaint the panel with the updated sizes
+        revalidate();  // Ensure the layout is refreshed
+        repaint();
     }
 
     public void initializeThread(DelayClass thread) {
         this.threadClass = thread;
-
-        if(gameSettings.isGameMusicOn())
-        // music playing background one
-        {
-            GameBlock.playBackGroundMusic();
-        }
-    }
-
-    // Getter method for number of columns
-    public int getNoOfColumns() {
-        return noOfColumns;
-    }
-
-    // Getter method for the number of rows if needed later
-    public int getNoOfRows() {
-        return noOfRows;
-    }
-
-    public Color[][] getBoard() {
-        return settledBlocks;
-    }
-
-    // Method to convert Color[][] to int[][] for AI evaluation
-    public int[][] getBinaryBoard() {
-        int[][] intBoard = new int[noOfRows][noOfColumns];
-
-        // Convert the Color[][] board to an int[][] board
-        for (int i = 0; i < noOfRows; i++) {
-            for (int j = 0; j < noOfColumns; j++) {
-                // If there's a settled block (i.e., color is not null), set to 1, otherwise 0
-                intBoard[i][j] = (settledBlocks[i][j] != null) ? 1 : 0;
-            }
-        }
-
-        return intBoard;
     }
 
     protected boolean checkBottom() {
-        if (gameBlock == null) {
-            return false;  // If no block exists, nothing to check
-        }
         if (blockYGridInitialPosition + gameBlock.getBlockShape().length == noOfRows) {
             return false;
         }
@@ -160,7 +156,8 @@ public class GameBoard extends JPanel {
 
     public int clearOutCompletedLines() {
         boolean flag;
-        int totalScore = 0;
+
+        int rowsErased = 0;
         for (int i = noOfRows - 1; i >= 0; i--) {
             flag = true;
             for (int j = 0; j < noOfColumns; j++) {
@@ -170,25 +167,47 @@ public class GameBoard extends JPanel {
                 }
             }
             if (flag) {
-                totalScore += 1;
+                rowsErased++;
                 clearOneCompletedLine(i);
                 moveBackgroundLinesDown(i);
                 clearOneCompletedLine(0);
-                System.out.println("total score: " + totalScore + ", i: " + i) ;
+                //System.out.println("Rows Erased: " + rowsErased + ", i: " + i) ;
 
                 i++;
-                System.out.println("total score: " + totalScore + ", i: " + i) ;
+                //System.out.println("Rows Erased: " + rowsErased + ", i: " + i) ;
 
                 repaint();
             }
         }
-        if (totalScore > 0) {
+        //System.out.println("Rows erased in this batch: " + rowsErased);
+
+        if (rowsErased > 0) {
             // line erase sound
-            if(gameSettings.isGameSoundsOn()) {
+            if (gameSettings.isGameSoundsOn()) {
                 GameBlock.playEraseLineMusic();
             }
+            updateScoreOnRowsCleared(rowsErased);
+
+            linesErased += rowsErased;
+            //System.out.println("Total lines erased: " + linesErased);
+
+            infoBoard.updateLinesErased(linesErased);
+
+            temp += rowsErased;
+            System.out.println("current level: " + currentLevel + " temp: " + temp);
+            ;
+            if (temp >= 10) {
+                temp = 0;
+                GameBlock.playLevelUpMusic();
+                currentLevel++;
+                System.out.println(currentLevel);
+                infoBoard.updateLevel(currentLevel);
+                threadClass.increaseBlockSpeed(currentLevel);
+                System.out.println("Current level: " + currentLevel);
+
+            }
         }
-        return totalScore;
+        return rowsErased;
     }
 
 
@@ -198,6 +217,20 @@ public class GameBoard extends JPanel {
         }
     }
 
+    void updateScoreOnRowsCleared(int rowsErased) {
+        if (rowsErased == 1) {
+            score += 100;
+        } else if (rowsErased == 2) {
+            score += 300;
+        } else if (rowsErased == 3) {
+            score += 600;
+        } else if (rowsErased == 4) {
+            score += 1000;
+        }
+        //System.out.println("Updated score: " + score);
+
+        infoBoard.updateScore(score);
+    }
 
     private void moveBackgroundLinesDown(int rowNumber) {
         for (int rowOfBlock = rowNumber; rowOfBlock > 0; rowOfBlock--) {
@@ -210,32 +243,29 @@ public class GameBoard extends JPanel {
     }
 
 
-    public GameBlock createNewBlock() {
-        Random r = new Random();
-        int randomNumber = r.nextInt(shapes.length);
-
-        // Randomly select a shape and color for the block
-        currentShape = shapes[randomNumber];
-        newBlockColorSelectedAtRandom = blockColors[r.nextInt(blockColors.length)];
-
-        // Create a new GameBlock with the selected shape and color
-        gameBlock = new GameBlock(currentShape, newBlockColorSelectedAtRandom);
-
-        // Set the initial position of the block on the grid
-        blockXGridInitialPosition = 4;  // Adjust X-axis position
-        blockYGridInitialPosition = -gameBlock.getBlockShape().length;  // Reset Y position
-
-        // Return the newly created GameBlock object
-        return gameBlock;
+    //        public Color createNewBlock() {
+//            Random r = new Random();
+//            int randomNumber = r.nextInt(shapes.length);
+//
+//            currentShape = shapes[randomNumber];
+//            newBlockColorSelectedAtRandom = blockColors[r.nextInt(blockColors.length)];
+//            System.out.println("New Shape: " + newBlockColorSelectedAtRandom.toString() + " " + this.shapeNames[randomNumber]);
+//
+//            gameBlock = new GameBlock(currentShape, newBlockColorSelectedAtRandom);
+//            blockXGridInitialPosition = 9;
+//            blockYGridInitialPosition = -gameBlock.getBlockShape().length;
+//            return newBlockColorSelectedAtRandom;
+//        }
+    public Color createNewBlock() {
+        BlockFactory blockFactory = BlockFactoryProducer.getRandomBlock();
+        gameBlock = blockFactory.createBlock(); // Use factory to create the block
+        blockXGridInitialPosition = noOfColumns / 2;  // Reset block's initial position
+        blockYGridInitialPosition = -gameBlock.getBlockShape().length;
+        return gameBlock.getBlockColor();
     }
 
 
-
-
     public void paintBlock(Graphics g) {
-        if (gameBlock == null) {
-            return;  // If there's no block to paint, return early
-        }
         int[][] drawingShape = gameBlock.getBlockShape();
         for (int i = 0; i < gameBlock.getBlockShape().length; i++) {
             for (int j = 0; j < gameBlock.getBlockShape()[0].length; j++) {
@@ -291,32 +321,27 @@ public class GameBoard extends JPanel {
      * merge pre spawned blocks to the game board
      * */
     public void mergeBlock(Color color) {
-        if (gameBlock == null) {
-            return;  // If no block exists, nothing to merge
-        }
+//        System.out.println("MERGING: ");
         int[][] blockShape = gameBlock.getBlockShape();
         int heightOfTheBlock = gameBlock.getBlockShape().length;
         int widthOfTheBlock = gameBlock.getBlockShape()[0].length;
         int horizontalPosition = blockXGridInitialPosition;
         int verticalPosition = blockYGridInitialPosition;
-
-        // Loop through the current block's shape and add it to the settledBlocks array
+        System.out.println("V: " + verticalPosition + " : H: " + horizontalPosition);
         for (int i = 0; i < heightOfTheBlock; i++) {
             for (int j = 0; j < widthOfTheBlock; j++) {
                 if (blockShape[i][j] == 1) {
-                    settledBlocks[i + abs(verticalPosition)][j + abs(horizontalPosition)] = gameBlock.getBlockColor();
+                    try {
+//                        System.out.println("Settling Bloc: " + gameBlock.getBlockColor().toString());
+                        settledBlocks[i + abs(verticalPosition)][j + abs(horizontalPosition)] = gameBlock.getBlockColor();
+//                        settledBlocks[i + abs(verticalPosition)][j + abs(horizontalPosition)] = color;
+                    } catch (Exception e) {
+                        System.out.println("Exception: " + e.getMessage());
+                    }
                 }
             }
         }
-        // ** Clear current block since it's merged **
-        gameBlock = null;
-
-        // ** Create a new block immediately **
-        currentBlock = createNewBlock();
     }
-
-
-
 
 
     public boolean maximumHeightReached() {

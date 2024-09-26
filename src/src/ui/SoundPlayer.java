@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SoundPlayer {
-
+    private int backgroundMusicPosition = 0;
     String musicFolderPath = new File("").getAbsolutePath();
     String backgroundMusicPath = musicFolderPath + "/src/src/audioFiles/background.wav";
     String gameFinishSoundPath = musicFolderPath + "/src/src/audioFiles/game-finish.wav";
@@ -68,4 +68,32 @@ public class SoundPlayer {
         gameFinishMusic.setFramePosition(0);
         gameFinishMusic.start();
     }
+
+
+    public void pauseBackgroundMusic() {
+        if (backgroundMusic.isRunning()) {
+            backgroundMusicPosition = backgroundMusic.getFramePosition(); // Save current position
+            backgroundMusic.stop(); // Stop the music without resetting
+        }
+    }
+
+    public void pauseGameSounds() {
+        if (moveTurnMusic.isRunning()) {
+            backgroundMusicPosition = moveTurnMusic.getFramePosition(); // Save current position
+            moveTurnMusic.stop(); // Stop the music without resetting
+        }
+    }
+
+    public void resumeBackgroundMusic() {
+        if (!backgroundMusic.isRunning()) {
+            backgroundMusic.setFramePosition(backgroundMusicPosition); // Resume from saved position
+            backgroundMusic.start(); // Start the music again
+        }
+    }
+//    public void pauseBackgroundMusic(){
+//        if(backgroundMusic.isRunning()) {
+//            backgroundMusic.close();
+//            backgroundMusic.setFramePosition(0);
+//        }
+//    }
 }

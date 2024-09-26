@@ -11,11 +11,14 @@ public class GameSettings {
     private boolean aiModeOn;
     private int fieldWidth;
     private int fieldHeight;
-    private int gameLevel;
+    private int initialGameLevel;
     private boolean gameMusicOn;
     private boolean gameSoundsOn;
     private boolean extendModeOn;
+    private String playerOneType;
+    private String playerTwoType;
 
+    // Getters and setters
     public boolean getAiModeOn() {
         return aiModeOn;
     }
@@ -41,11 +44,11 @@ public class GameSettings {
     }
 
     public int getGameLevel() {
-        return gameLevel;
+        return initialGameLevel;
     }
 
     public void setGameLevel(int gameLevel) {
-        this.gameLevel = gameLevel;
+        this.initialGameLevel = gameLevel;
     }
 
     public boolean isGameMusicOn() {
@@ -72,12 +75,24 @@ public class GameSettings {
         this.extendModeOn = extendModeOn;
     }
 
+    public String getPlayerOneType() {
+        return playerOneType;
+    }
+    
+    public void setPlayerOneType(String playerOneType) {
+        this.playerOneType = playerOneType;
+    }
 
+    public String getPlayerTwoType() {
+        return playerTwoType;
+    }
+
+    public void setPlayerTwoType(String playerTwoType) {
+        this.playerTwoType = playerTwoType;
+    }
+
+    // Save settings to JSON file
     public void writeSettingsIntoJsonFile(GameSettings settings) {
-        /*
-         * writing into json settings File
-         * */
-        // code to convert object to json
         Gson json = new Gson();
         try (FileWriter writer = new FileWriter("Configurations.json")) {
             json.toJson(settings, writer);
@@ -85,15 +100,15 @@ public class GameSettings {
         } catch (IOException e) {
             System.out.println("Error Saving Settings: " + e.getMessage());
         }
+        System.out.println("New Settings: " + settings.toString());
     }
 
+    // Read settings from JSON file
     public GameSettings readSettingsFromJsonFile() {
         GameSettings gameSettings = null;
         try (FileReader reader = new FileReader("Configurations.json")) {
-            // Read the JSON file and map it to the Game Settings object
             Gson gson = new Gson();
             gameSettings = gson.fromJson(reader, GameSettings.class);
-            // Output the Product object
         } catch (IOException | JsonIOException e) {
             System.out.println(e.getMessage());
         }
@@ -103,14 +118,15 @@ public class GameSettings {
     @Override
     public String toString() {
         return "GameSettings{" +
-                "aiModeOn='" + aiModeOn + '\'' +
+                "aiModeOn=" + aiModeOn +
                 ", fieldWidth=" + fieldWidth +
                 ", fieldHeight=" + fieldHeight +
-                ", gameLevel=" + gameLevel +
+                ", initialGameLevel=" + initialGameLevel +
                 ", gameMusicOn=" + gameMusicOn +
                 ", gameSoundsOn=" + gameSoundsOn +
                 ", extendModeOn=" + extendModeOn +
+                ", playerOneType='" + playerOneType + '\'' +
+                ", playerTwoType='" + playerTwoType + '\'' +
                 '}';
     }
-
 }

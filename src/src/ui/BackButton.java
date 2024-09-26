@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 public class BackButton extends JButton {
     private JButton backButton = new JButton("Back");
 
-    public BackButton(JFrame frame, DelayClass gameThread, GameScreen gameScreen) {
+    public BackButton(GameScreen gameScreen) {
         int boardHeight = 100;
         int boardWidth = 100;
         this.setBounds(300, 480, boardWidth, boardHeight);
@@ -21,21 +21,28 @@ public class BackButton extends JButton {
         backButton.setOpaque(true);
         add(backButton);
         this.setVisible(true);
+        boolean extendedModeOn = gameScreen.gameSettings.isExtendModeOn();
 
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Back Button clicked.");
-//                System.out.println("(GameScreen) Game Paused.");
-                gameThread.pauseGame();
+
+                gameScreen.pauseLabel.setVisible(true);
+                gameScreen.threadClass.pauseGame();
+
+                if (extendedModeOn) {
+                    gameScreen.pauseLabel2.setVisible(true);
+                    gameScreen.threadClass2.pauseGame();
+                }
 
                 // Confirmation Dialog
                 // Yes - Close frame and display Main Menu
                 // No - Do nothing. Continue with game
 
-                if (!gameThread.gameOver()) {
+                if (!gameScreen.threadClass.gameOver() || (extendedModeOn && !gameScreen.threadClass2.gameOver())) {
                     int response = JOptionPane.showConfirmDialog(
-                            frame,
+                            gameScreen,
                             "Are you sure you want to stop the current game?",
                             "Stop Game",
                             JOptionPane.YES_NO_OPTION,
@@ -43,19 +50,26 @@ public class BackButton extends JButton {
                     );
 
                     if (response == JOptionPane.YES_OPTION) {
-//                        System.out.println("Confirmation Dialog - Yes");
+                        gameScreen.threadClass.backButtonExitTriggered();
+                        if (extendedModeOn) {
+                            gameScreen.threadClass2.backButtonExitTriggered();
+                        }
                         new MainMenuScreen().showMainScreen();
-                        frame.dispose();
+                        gameScreen.dispose();
                     } else {
                         // Resume the game if "No" is clicked
-                        if (gameThread != null && gameThread.isGameRunning()) {
-//                            System.out.println("Confirmation Dialog - No");
-                            gameThread.resumeGame();
+                        if (gameScreen.threadClass != null && gameScreen.threadClass.isGameRunning()) {
+                            gameScreen.pauseLabel.setVisible(false);
+                            gameScreen.threadClass.resumeGame();
+                        }
+                        if (extendedModeOn && (gameScreen.threadClass2 != null && gameScreen.threadClass2.isGameRunning())) {
+                            gameScreen.pauseLabel2.setVisible(false);
+                            gameScreen.threadClass2.resumeGame();
                         }
                     }
                 } else {
                     new MainMenuScreen().showMainScreen();
-                    frame.dispose();
+                    gameScreen.dispose();
                 }
             }
         });
