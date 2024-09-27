@@ -1,6 +1,5 @@
 package ui;
 
-import blockFactories.BlockFactory;
 import blockFactories.BlockFactoryProducer;
 import settings.GameSettings;
 
@@ -15,7 +14,7 @@ public class GameBoard extends JPanel {
     private final int noOfRows;
     private final int noOfColumns;
     private int blockSize;
-    private GameBlock gameBlock;
+    protected GameBlock gameBlock;
     int xAxis;
     int yAxis;
     int temp = 0;
@@ -24,14 +23,12 @@ public class GameBoard extends JPanel {
     int blockXGridInitialPosition;
     int blockYGridInitialPosition;
     private final Color[][] settledBlocks;
-    private Color[] blockColors = {Color.CYAN, Color.GREEN, Color.ORANGE, Color.yellow, Color.red, Color.GRAY, Color.pink};
-    private Color newBlockColorSelectedAtRandom;
-    Color createdNewBlockWithColor;
     public int score = 0;
     private int initialLevel;
     private int currentLevel;
     private int linesErased = 0;
     private GameScreen gameScreen;
+    Color createdNewBlockWithColor;
 
     // New
     private InfoBoard infoBoard = new InfoBoard();
@@ -41,33 +38,10 @@ public class GameBoard extends JPanel {
     // Game Block Sequence Pointer
     private int sequenceID = 0;
 
-
-//        public int[][][] shapes = {
-//                {{1, 0}, {1, 0}, {1, 1}},   // L
-//                {{1, 1, 1}},                // Straight Line
-//                {{1, 1, 0}, {0, 1, 1}},     // Z
-//                {{1, 1, 1}, {0, 1, 0}},     // T
-//                {{1, 1}, {1, 1}},           // Box
-//                {{0, 1}, {0, 1}, {1, 1}},   // Reverse L
-//                {{0, 1, 1}, {1, 1, 0}}      // Reverse Z
-//        };
-//
-//        public String[] shapeNames = {
-//                "L",                // L
-//                "Straight Line",    // Straight Line
-//                "Z",                // Z
-//                "T",                // T
-//                "Box",              // Box
-//                "Reverse L",        // Reverse L
-//                "Reverse Z"         // Reverse Z
-//        };
-//
-//        public int[][] currentShape;
-
-
     public GameBoard(GameScreen gameScreen, String playerNum) {
         this.gameScreen = gameScreen;
         this.playerNum = playerNum;
+
 
         // Read settings from JSON or other source
         gameSettings = new GameSettings().readSettingsFromJsonFile();
@@ -89,8 +63,6 @@ public class GameBoard extends JPanel {
                 adjustBoardSize();
             }
         });
-
-        // Create a new block when the game board is initialized
         createdNewBlockWithColor = createNewBlock();
         initialLevel = gameSettings.getGameLevel();
         currentLevel = initialLevel;
@@ -109,7 +81,6 @@ public class GameBoard extends JPanel {
 
         // Calculate new block size based on the smaller dimension
         blockSize = Math.min(newWidth / noOfColumns, newHeight / noOfRows);
-        System.out.println("(Adjust Board Size) Block Size: " + blockSize);
 
         // Recalculate the preferred size of the panel based on the block size and number of rows/columns
         int preferredWidth = blockSize * noOfColumns;
@@ -122,8 +93,6 @@ public class GameBoard extends JPanel {
         // Repaint the panel with the updated sizes
         revalidate();  // Ensure the layout is refreshed
         repaint();
-
-        System.out.println("(Adjust Board Size) Player" + this.playerNum + " Width: " + this.getWidth() + ", Height: " + this.getHeight());
     }
 
     public void initializeThread(DelayClass thread) {
@@ -196,7 +165,7 @@ public class GameBoard extends JPanel {
             infoBoard.updateLinesErased(linesErased);
 
             temp += rowsErased;
-            System.out.println("current level: " + currentLevel + " temp: " + temp);
+            System.out.println("Current Level: " + currentLevel + " Temp: " + temp);
             ;
             if (temp >= 10) {
                 temp = 0;
@@ -205,7 +174,7 @@ public class GameBoard extends JPanel {
                 System.out.println(currentLevel);
                 infoBoard.updateLevel(currentLevel);
                 threadClass.increaseBlockSpeed(currentLevel);
-                System.out.println("Current level: " + currentLevel);
+                System.out.println("Current Level: " + currentLevel);
 
             }
         }
@@ -244,14 +213,13 @@ public class GameBoard extends JPanel {
     }
 
     public Color createNewBlock() {
-        BlockFactory blockFactory = BlockFactoryProducer.getRandomBlock();
-        System.out.println("blockFactory: " + blockFactory);
-        gameBlock = blockFactory.createBlock(); // Use factory to create the block
+        gameBlock = BlockFactoryProducer.getRandomBlock().createBlock(); // Use factory to create the block
 
         // Game Block Sequence in sync for Two Player Mode
         if (gameSettings.isExtendModeOn()) {
             gameScreen.gameBlockSequence.add(gameBlock);
-            gameBlock = gameScreen.gameBlockSequence.get(sequenceID);
+            // Using GameBlock Copy Constructor to avoid reference copy from gameBlockSequence
+            gameBlock = new GameBlock(gameScreen.gameBlockSequence.get(sequenceID));
             this.sequenceID++;
         }
 

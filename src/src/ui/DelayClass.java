@@ -74,11 +74,12 @@ public class DelayClass extends Thread {
 //                System.out.println("Score: " + totalScore + ", Speed " + speedBlock + ", Level " + level);
                 // Check if the game is over
                 gameOver = gameBoard.maximumHeightReached();
+
                 if (gameOver) {
                     score = 0;
                     score = gameBoard.score;
                     GameBlock.playGameFinishMusic();
-                    // final game score
+                    // Final Game Score
                     checkIfTopTen(score);
 
 //                    System.out.println("Maximum height reached");

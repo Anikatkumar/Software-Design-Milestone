@@ -27,7 +27,7 @@ public class GameScreen extends JFrame {
     // Game Block Sequence
     protected List<GameBlock> gameBlockSequence = new ArrayList<>();
 
-    // Facade for display
+    // Facade for Display
     private GameDisplayFacade gameDisplayFacade;
 
     public GameScreen() {
@@ -110,8 +110,8 @@ public class GameScreen extends JFrame {
 
     public void twoPlayerMode() {
         System.out.println("(GameScreen) Two Player Mode");
+
         gameBoard = new GameBoard(this, "1");
-        System.out.println("(GameScreen) Initial GameBoard Height: " + gameBoard.getHeight() + " GameBoard Width: " + gameBoard.getWidth());
         gameBoard.setPreferredSize(new Dimension(390, getHeight()));
 
         gameBoard2 = new GameBoard(this, "2");
@@ -262,7 +262,6 @@ public class GameScreen extends JFrame {
             keyActionMap.put("spacePressed", new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("Space-downFast triggered");
                     gameBoard2.moveBlockDownFast();
                 }
             });
@@ -282,17 +281,25 @@ public class GameScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (threadClass.gamePaused) {
                     pauseLabel.setVisible(false);
-                    pauseLabel2.setVisible(false);
-                    System.out.println("(GameScreen) Game Resumed.");
                     threadClass.resumeGame();
-                    threadClass2.resumeGame();
+                    System.out.println("(GameScreen) Game Resumed.");
+
+                    // Player 2 Mode
+                    if (gameSettings.isExtendModeOn()) {
+                        pauseLabel2.setVisible(false);
+                        threadClass2.resumeGame();
+                    }
                 } else {
                     // Set up the label for the message
                     pauseLabel.setVisible(true); // Toggle visibility
-                    pauseLabel2.setVisible(true); // Toggle visibility
-                    System.out.println("(GameScreen) Game Paused.");
                     threadClass.pauseGame();
-                    threadClass2.pauseGame();
+                    System.out.println("(GameScreen) Game Paused.");
+
+                    // Player 2 Mode
+                    if (gameSettings.isExtendModeOn()) {
+                        pauseLabel2.setVisible(true); // Toggle visibility
+                        threadClass2.pauseGame();
+                    }
                 }
             }
         });
