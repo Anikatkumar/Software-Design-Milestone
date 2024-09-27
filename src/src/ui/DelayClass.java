@@ -21,10 +21,12 @@ public class DelayClass extends Thread {
     public Color colorAssigned;
     private int speedBlock = 1000;
     public int level = 1;
+    private String playerNumber;
 
-    public DelayClass(GameBoard gameBoard, GameScreen gameScreen) {
+    public DelayClass(GameBoard gameBoard, GameScreen gameScreen, String playerNumber) {
         this.gameBoard = gameBoard;
         this.gameScreen = gameScreen;
+        this.playerNumber = playerNumber;
         // increase speed of block on level selected in settings
         increaseBlockSpeed(gameSettings.readSettingsFromJsonFile().getGameLevel());
     }
@@ -129,7 +131,7 @@ public class DelayClass extends Thread {
         savedScoresList.sort(Comparator.comparingInt(GameScores::getScore).reversed());
         // if list size is already less than 10 then save it doesn't need to check
         if (savedScoresList.size() < 10) {
-            playerName = askPlayerName();
+            playerName = askPlayerName(playerNumber);
             newScore.setPlayerName(playerName);
             newScore.setScore(score);
             gameScores.writeScoresInJSONFile(newScore);
@@ -141,7 +143,7 @@ public class DelayClass extends Thread {
                 System.out.println("Scores are 10 or More: ");
                 savedScoresList.removeLast();
                 System.out.println("Removed last score ");
-                playerName = askPlayerName();
+                playerName = askPlayerName(playerNumber);
                 newScore.setPlayerName(playerName);
                 newScore.setScore(score);
                 savedScoresList.add(newScore);
@@ -161,10 +163,10 @@ public class DelayClass extends Thread {
         checkIfTopTen(score);
     }
 
-    public static String askPlayerName() {
+    public static String askPlayerName(String playerNumber) {
         String playerName = JOptionPane.showInputDialog(null,
-                "Enter your name:",
-                "Name",
+                "Enter your name for player " + playerNumber,
+                "Player"+ playerNumber +"Name",
                 JOptionPane.PLAIN_MESSAGE);
 
         if (playerName == null || playerName.trim().isEmpty()) {

@@ -96,7 +96,7 @@ public class GameScreen extends JFrame {
         this.add(centerPanel, BorderLayout.CENTER);
         gameBoard.add(pauseLabel);
 
-        threadClass = new DelayClass(gameBoard, this);
+        threadClass = new DelayClass(gameBoard, this,"1");
         System.out.println("(GameScreen) GameBoard Thread 1 started::" + threadClass.getName());
         threadClass.start();
 
@@ -138,10 +138,10 @@ public class GameScreen extends JFrame {
         gameBoard2.add(pauseLabel2);
 
         // Multi Threading
-        threadClass = new DelayClass(gameBoard, this);
+        threadClass = new DelayClass(gameBoard, this,"1");
         System.out.println("(GameScreen) GameBoard Thread 1 started::" + threadClass.getName());
         threadClass.start();
-        threadClass2 = new DelayClass(gameBoard2, this);
+        threadClass2 = new DelayClass(gameBoard2, this,"2");
         System.out.println("(GameScreen) GameBoard Thread 2 started::" + threadClass2.getName());
         threadClass2.start();
 

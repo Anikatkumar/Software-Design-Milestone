@@ -90,18 +90,6 @@ public class GameScores {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     public void writeListOfScoresInJSONFile(List<GameScores> gameScores) {
         Gson json = new Gson();
         try (FileWriter writer = new FileWriter("Scores.json")) {
