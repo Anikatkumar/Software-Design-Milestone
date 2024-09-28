@@ -1,6 +1,8 @@
 package ui;
 
 import blockFactories.BlockFactoryProducer;
+import serverFiles.PureGame;
+import serverFiles.TetrisClient;
 import settings.GameSettings;
 
 import javax.swing.*;
@@ -15,6 +17,7 @@ public class GameBoard extends JPanel {
     private final int noOfColumns;
     private int blockSize;
     protected GameBlock gameBlock;
+    protected GameBlock nextGameBlock;
     int xAxis;
     int yAxis;
     int temp = 0;
@@ -34,17 +37,30 @@ public class GameBoard extends JPanel {
     private InfoBoard infoBoard = new InfoBoard();
     public JPanel infoPanel;
     String playerNum;
+    String playerType;
 
     // Game Block Sequence Pointer
-    private int sequenceID = 0;
+    protected int sequenceID = 0;
+
+    // Tetris Client Request
+    protected PureGame pureGame;
+    private int[][] settledIntBlocks;
+    protected boolean tetrisServer = false;
+    private boolean firstRun = true;
 
     public GameBoard(GameScreen gameScreen, String playerNum) {
+        // Read settings from JSON or other source
+        gameSettings = gameSettings.readSettingsFromJsonFile();
         this.gameScreen = gameScreen;
         this.playerNum = playerNum;
+        this.playerType = this.playerNum.equalsIgnoreCase("1") ? gameSettings.getPlayerOneType() : gameSettings.getPlayerTwoType();
+        initialLevel = gameSettings.getGameLevel();
+        currentLevel = initialLevel;
 
-
-        // Read settings from JSON or other source
-        gameSettings = new GameSettings().readSettingsFromJsonFile();
+        // Tetris Client : Initialize Client
+        pureGame = new PureGame();
+        pureGame.setWidth(gameScreen.getWidth());
+        pureGame.setHeight(gameScreen.getHeight());
 
         // Initialize number of columns and rows from GameSettings
         this.noOfColumns = gameSettings.getFieldWidth();
@@ -63,12 +79,10 @@ public class GameBoard extends JPanel {
                 adjustBoardSize();
             }
         });
-        createdNewBlockWithColor = createNewBlock();
-        initialLevel = gameSettings.getGameLevel();
-        currentLevel = initialLevel;
 
         // Creates the Info Board for this Game Board
         infoPanel = infoBoard.createInfoPanel(playerNum);
+        createdNewBlockWithColor = createNewBlock();
     }
 
     /**
@@ -95,11 +109,76 @@ public class GameBoard extends JPanel {
         repaint();
     }
 
+    public void setTetrisServerStatus(boolean status) {
+        this.tetrisServer = status;
+    }
+
+    public void serverMove(int x_position, int rotation_count) {
+        if (rotation_count == 0) {
+//            System.out.println("No rotation needed.");
+        } else {
+//            System.out.println("Rotate the piece " + rotation_count + " times.");
+            for (int count = 0; count < rotation_count; count++) {
+                rotateBlockOnUpKeyPressed();
+            }
+        }
+
+        //Get the current x-pos of the block and decide left or right
+        int newBlock_initialPosition = blockXGridInitialPosition;
+
+        if (newBlock_initialPosition < x_position) {
+//            System.out.println("Moving Block to the Right");
+            while (newBlock_initialPosition < x_position) {
+                moveBlockRight();
+                newBlock_initialPosition++;
+            }
+        }
+        if (newBlock_initialPosition > x_position) {
+//            System.out.println("Moving Block to the Left");
+            while (newBlock_initialPosition > x_position) {
+                moveBlockLeft();
+                newBlock_initialPosition--;
+//                System.out.println("Left");
+            }
+        }
+
+//        System.out.println("Moving block down.");
+        while (true) {
+            if (!checkBottom()) {
+                break;
+            } else {
+                moveBlockDownFast();
+                try {
+                    // Adding a delay of 100 milliseconds (0.1 seconds) for block drop
+                    Thread.sleep(100 - (this.currentLevel * 2));
+                } catch (InterruptedException e) {
+                    // Handle the exception if the sleep is interrupted
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    // Convert Color settledBlocks into Int settledIntBlocks
+    public int[][] convertBlocksToInt() {
+        int rows = settledBlocks.length;
+        int columns = settledBlocks[0].length;
+        settledIntBlocks = new int[rows][columns];
+
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+                // If the color is null, it's a 0 (no block); otherwise, it's a 1 (block present)
+                settledIntBlocks[row][col] = (settledBlocks[row][col] != null) ? 1 : 0;
+            }
+        }
+        return settledIntBlocks;
+    }
+
     public void initializeThread(DelayClass thread) {
         this.threadClass = thread;
     }
 
-    protected boolean checkBottom() {
+    public boolean checkBottom() {
         if (blockYGridInitialPosition + gameBlock.getBlockShape().length == noOfRows) {
             return false;
         }
@@ -215,20 +294,45 @@ public class GameBoard extends JPanel {
     public Color createNewBlock() {
         gameBlock = BlockFactoryProducer.getRandomBlock().createBlock(); // Use factory to create the block
 
-        // Game Block Sequence in sync for Two Player Mode
-        if (gameSettings.isExtendModeOn()) {
-            gameScreen.gameBlockSequence.add(gameBlock);
-            // Using GameBlock Copy Constructor to avoid reference copy from gameBlockSequence
-            gameBlock = new GameBlock(gameScreen.gameBlockSequence.get(sequenceID));
-            this.sequenceID++;
+        gameScreen.gameBlockSequence.add(gameBlock);
+        // Using GameBlock Copy Constructor to avoid reference copy from gameBlockSequence
+        gameBlock = new GameBlock(gameScreen.gameBlockSequence.get(sequenceID));
+        this.sequenceID++;
+
+        nextGameBlock = BlockFactoryProducer.getRandomBlock().createBlock();
+        gameScreen.gameBlockSequence.add(nextGameBlock);
+        nextGameBlock = new GameBlock(gameScreen.gameBlockSequence.get(sequenceID));
+
+        if (gameSettings.isExtendModeOn() && this.playerType.equalsIgnoreCase("External")) {
+            this.pureGame.setNextShape(nextGameBlock.getBlockShape());
         }
 
         // Position new block to the center of the GameBoard
         blockXGridInitialPosition = (noOfColumns / 2) - 1;
         blockYGridInitialPosition = -gameBlock.getBlockShape().length;
+
+        // Tetris Client
+        if (gameSettings.isExtendModeOn() && this.playerType.equalsIgnoreCase("External")) {
+            pureGame.setWidth(gameSettings.getFieldWidth());
+            pureGame.setHeight(gameSettings.getFieldHeight());
+            pureGame.setNextShape(nextGameBlock.getBlockShape());
+            pureGame.setCurrentShape(gameBlock.getBlockShape());
+            pureGame.setCells(convertBlocksToInt());
+
+            // This condition is to prevent communicating with the server until the Game Board is displayed later.
+            if (!this.firstRun) {
+                this.firstRun = false;
+                return null;
+            } else {
+                TetrisClient client = new TetrisClient(this);
+            }
+        }
         return gameBlock.getBlockColor();
     }
 
+    public PureGame getPureGame() {
+        return pureGame;
+    }
 
     public void paintBlock(Graphics g) {
         if (gameBlock != null) {
@@ -246,6 +350,16 @@ public class GameBoard extends JPanel {
                         g.drawRect(xAxis, yAxis, blockSize, blockSize);
                     }
                 }
+            }
+
+            // Tetris Client
+            if (gameSettings.isExtendModeOn() && this.playerType.equalsIgnoreCase("External")) {
+                nextGameBlock = new GameBlock(gameScreen.gameBlockSequence.get(sequenceID));
+                this.pureGame.setWidth(gameSettings.getFieldWidth());
+                this.pureGame.setHeight(gameSettings.getFieldHeight());
+                this.pureGame.setNextShape(nextGameBlock.getBlockShape());
+                this.pureGame.setCurrentShape(gameBlock.getBlockShape());
+                this.pureGame.setCells(convertBlocksToInt());
             }
         }
     }
@@ -276,7 +390,6 @@ public class GameBoard extends JPanel {
                     g.fillRect(horizontalPosition, verticalPosition, blockSize, blockSize);
                     g.setColor(Color.black);
                     g.drawRect(horizontalPosition, verticalPosition, blockSize, blockSize);
-
                 }
             }
         }
@@ -393,6 +506,7 @@ public class GameBoard extends JPanel {
         if (threadClass != null && threadClass.gamePaused) {
             return;
         }
+        System.out.println("Game Block Rotation");
         gameBlock.rotateBlock();
         if (blockXGridInitialPosition < 0) blockXGridInitialPosition = 0;
         if (blockYGridInitialPosition + gameBlock.getBlockShape().length >= noOfRows) {

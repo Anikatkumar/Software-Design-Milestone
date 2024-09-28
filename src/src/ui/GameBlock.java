@@ -9,11 +9,11 @@ public class GameBlock {
     private int degreeOfRotation = 0;
     private static SoundPlayer soundPlayer = new SoundPlayer();
 
-    public GameBlock(int[][] blockShape, Color blockColor) {
+    public GameBlock(int[][] blockShape, int rotation, Color blockColor) {
         this.blockShape = blockShape;
         this.blockColor = blockColor;
         transposeShapeMatrixToRotate();
-        degreeOfRotation = 0;
+        degreeOfRotation = rotation;
     }
 
     // Copy constructor

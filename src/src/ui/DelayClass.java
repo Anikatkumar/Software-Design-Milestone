@@ -24,11 +24,12 @@ public class DelayClass extends Thread {
     private String playerNumber;
 
     public DelayClass(GameBoard gameBoard, GameScreen gameScreen, String playerNumber) {
+        gameSettings = gameSettings.readSettingsFromJsonFile();
         this.gameBoard = gameBoard;
         this.gameScreen = gameScreen;
         this.playerNumber = playerNumber;
         // increase speed of block on level selected in settings
-        increaseBlockSpeed(gameSettings.readSettingsFromJsonFile().getGameLevel());
+        increaseBlockSpeed(gameSettings.getGameLevel());
     }
 
     @Override
@@ -43,6 +44,19 @@ public class DelayClass extends Thread {
                         System.out.println(e.getMessage());
                     }
                 }
+            }
+
+            // Tetris Client
+            this.gameBoard.pureGame = gameBoard.pureGame.getInstance(gameSettings.getFieldWidth(), gameSettings.getFieldHeight());
+            if (gameSettings.isExtendModeOn() && this.gameBoard.playerType.equalsIgnoreCase("External")) {
+                GameBlock gameBlock = new GameBlock(gameScreen.gameBlockSequence.get(this.gameBoard.sequenceID - 1));
+                GameBlock nextGameBlock = new GameBlock(gameScreen.gameBlockSequence.get(this.gameBoard.sequenceID));
+                gameBoard.pureGame.setWidth(gameSettings.getFieldWidth());
+                gameBoard.pureGame.setHeight(gameSettings.getFieldHeight());
+                gameBoard.pureGame.setNextShape(nextGameBlock.getBlockShape());
+                gameBoard.pureGame.setCurrentShape(gameBlock.getBlockShape());
+                gameBoard.pureGame.setCells(gameBoard.convertBlocksToInt());
+//                TetrisClient client = new TetrisClient(gameBoard);    //Call TetrisClient after every new block creation only.
             }
 
             // Condition to prevent creation of new block if there is still a current block
@@ -166,7 +180,7 @@ public class DelayClass extends Thread {
     public static String askPlayerName(String playerNumber) {
         String playerName = JOptionPane.showInputDialog(null,
                 "Enter your name for player " + playerNumber,
-                "Player"+ playerNumber +"Name",
+                "Player" + playerNumber + "Name",
                 JOptionPane.PLAIN_MESSAGE);
 
         if (playerName == null || playerName.trim().isEmpty()) {
