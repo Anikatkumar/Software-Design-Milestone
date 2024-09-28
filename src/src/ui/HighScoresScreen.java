@@ -136,12 +136,9 @@ public class HighScoresScreen extends JFrame {
 
     private static JPanel getButtonPanel(JFrame frame) {
         JButton backButton = new JButton("Back");
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new MainMenuScreen().showMainScreen();
-                frame.dispose();
-            }
+        backButton.addActionListener(e -> {
+            new MainMenuScreen().showMainScreen();
+            frame.dispose();
         });
         backButton.setBackground(Color.lightGray);
         backButton.setOpaque(true);
