@@ -96,7 +96,7 @@ public class GameScreen extends JFrame {
         this.add(centerPanel, BorderLayout.CENTER);
         gameBoard.add(pauseLabel);
 
-        threadClass = new DelayClass(gameBoard, this,"1");
+        threadClass = new DelayClass(gameBoard, this, "1");
         System.out.println("(GameScreen) GameBoard Thread 1 started::" + threadClass.getName());
         threadClass.start();
 
@@ -138,10 +138,10 @@ public class GameScreen extends JFrame {
         gameBoard2.add(pauseLabel2);
 
         // Multi Threading
-        threadClass = new DelayClass(gameBoard, this,"1");
+        threadClass = new DelayClass(gameBoard, this, "1");
         System.out.println("(GameScreen) GameBoard Thread 1 started::" + threadClass.getName());
         threadClass.start();
-        threadClass2 = new DelayClass(gameBoard2, this,"2");
+        threadClass2 = new DelayClass(gameBoard2, this, "2");
         System.out.println("(GameScreen) GameBoard Thread 2 started::" + threadClass2.getName());
         threadClass2.start();
 
@@ -198,47 +198,49 @@ public class GameScreen extends JFrame {
         keyInput.put(KeyStroke.getKeyStroke("typed ."), "P2 right");
         keyInput.put(KeyStroke.getKeyStroke("typed ,"), "P2 left");
         keyInput.put(KeyStroke.getKeyStroke("typed l"), "P2 rotate");
-        //  keyInput.put(KeyStroke.getKeyStroke("pressed SPACE"), "P2 downFast");
-//        keyInput.put(KeyStroke.getKeyStroke("SPACE"), "Space-downFast");
+
         this.setFocusable(true);
         this.requestFocusInWindow();
         keyInput.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), "spacePressed");
-        // Player 1 Actions
-        keyActionMap.put("P1 right", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (gameSettings.isGameSoundsOn()) {
-                    GameBlock.playMoveTurnMusic();
-                }
-                gameBoard.moveBlockRight();
-            }
-        });
-        keyActionMap.put("P1 left", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (gameSettings.isGameSoundsOn()) {
-                    GameBlock.playMoveTurnMusic();
-                }
-                gameBoard.moveBlockLeft();
-            }
-        });
-        keyActionMap.put("P1 up", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (gameSettings.isGameSoundsOn()) {
-                    GameBlock.playMoveTurnMusic();
-                }
-                gameBoard.rotateBlockOnUpKeyPressed();
-            }
-        });
-        keyActionMap.put("P1 down", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gameBoard.moveBlockDownFast();
-            }
-        });
 
-        if (gameSettings.isExtendModeOn()) {
+        if (gameSettings.isExtendModeOn() && !gameSettings.getPlayerOneType().equalsIgnoreCase("External")) {
+            // Player 1 Actions
+            keyActionMap.put("P1 right", new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (gameSettings.isGameSoundsOn()) {
+                        GameBlock.playMoveTurnMusic();
+                    }
+                    gameBoard.moveBlockRight();
+                }
+            });
+            keyActionMap.put("P1 left", new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (gameSettings.isGameSoundsOn()) {
+                        GameBlock.playMoveTurnMusic();
+                    }
+                    gameBoard.moveBlockLeft();
+                }
+            });
+            keyActionMap.put("P1 up", new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (gameSettings.isGameSoundsOn()) {
+                        GameBlock.playMoveTurnMusic();
+                    }
+                    gameBoard.rotateBlockOnUpKeyPressed();
+                }
+            });
+            keyActionMap.put("P1 down", new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    gameBoard.moveBlockDownFast();
+                }
+            });
+        }
+
+        if (gameSettings.isExtendModeOn() && !gameSettings.getPlayerTwoType().equalsIgnoreCase("External")) {
             // Player 2 Actions
             keyActionMap.put("P2 right", new AbstractAction() {
                 @Override

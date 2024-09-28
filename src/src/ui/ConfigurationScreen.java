@@ -1,4 +1,4 @@
- package ui;
+package ui;
 
 import settings.GameSettings;
 
@@ -101,7 +101,7 @@ public class ConfigurationScreen extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 fieldWidth = fieldWidthSlider.getValue();
                 fieldWidthValueLabel.setText(String.valueOf(fieldWidthSlider.getValue()));
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType, playerTwoType);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel, playerOneType, playerTwoType);
                 //saveSettings();
 
             }
@@ -120,7 +120,7 @@ public class ConfigurationScreen extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 fieldHeight = fieldHeightSlider.getValue();
                 fieldHeightValueLabel.setText(String.valueOf(fieldHeightSlider.getValue()));
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType,playerTwoType);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel, playerOneType, playerTwoType);
             }
         });
 
@@ -137,7 +137,7 @@ public class ConfigurationScreen extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 initialGameLevel = gameLevelSlider.getValue();
                 gameLevelValueLabel.setText(String.valueOf(gameLevelSlider.getValue()));
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType,playerTwoType);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel, playerOneType, playerTwoType);
             }
         });
 
@@ -164,8 +164,8 @@ public class ConfigurationScreen extends JFrame {
         // Player One Type
         JLabel playerOneLabel = new JLabel("Player One Type:");
         playerOneHuman = new JRadioButton("Human", playerOneType.equals("Human"));
-        playerOneAI = new JRadioButton("AI",playerOneType.equals("AI"));
-        playerOneExternal = new JRadioButton("External",playerOneType.equals("External"));
+        playerOneAI = new JRadioButton("AI", playerOneType.equals("AI"));
+        playerOneExternal = new JRadioButton("External", playerOneType.equals("External"));
 
         ButtonGroup playerOneGroup = new ButtonGroup();
         playerOneGroup.add(playerOneHuman);
@@ -180,8 +180,8 @@ public class ConfigurationScreen extends JFrame {
         // Player Two Type
         JLabel playerTwoLabel = new JLabel("Player Two Type:");
         playerTwoHuman = new JRadioButton("Human", playerOneType.equals("Human"));
-        playerTwoAI = new JRadioButton("AI",playerOneType.equals("AI"));
-        playerTwoExternal = new JRadioButton("External",playerOneType.equals("External"));
+        playerTwoAI = new JRadioButton("AI", playerOneType.equals("AI"));
+        playerTwoExternal = new JRadioButton("External", playerOneType.equals("External"));
 
         ButtonGroup playerTwoGroup = new ButtonGroup();
         playerTwoGroup.add(playerTwoHuman);
@@ -211,8 +211,7 @@ public class ConfigurationScreen extends JFrame {
                     playerTwoAI.setSelected(false);
                     playerTwoExternal.setSelected(false);
                 }
-
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType,playerTwoType);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel, playerOneType, playerTwoType);
             }
         });
 
@@ -240,7 +239,7 @@ public class ConfigurationScreen extends JFrame {
                 } else {
                     GameBlock.pauseBackGroundMusic();
                 }
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType,playerTwoType);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel, playerOneType, playerTwoType);
             }
         });
         configurationPanel.add(new JLabel());
@@ -251,7 +250,7 @@ public class ConfigurationScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 soundEffectStatusLabel.setText(soundEffectCheckbox.isSelected() ? "On" : "Off");
                 gameSoundsOn = soundEffectCheckbox.isSelected();
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType,playerTwoType);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel, playerOneType, playerTwoType);
             }
         });
         configurationPanel.add(new JLabel());
@@ -263,7 +262,7 @@ public class ConfigurationScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 aiPlayStatusLabel.setText(aiPlayCheckbox.isSelected() ? "On" : "Off");
                 aiModeOn = aiPlayCheckbox.isSelected();
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType,playerTwoType);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel, playerOneType, playerTwoType);
             }
         });
         configurationPanel.add(new JLabel());
@@ -274,16 +273,14 @@ public class ConfigurationScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 extendModeStatusLabel.setText(extendModeCheckbox.isSelected() ? "On" : "Off");
                 extendModeOn = extendModeCheckbox.isSelected();
-                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel,playerOneType,playerTwoType);
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel, playerOneType, playerTwoType);
             }
         });
 
         configurationPanel.add(new JLabel());
-
         configurationPanel.add(playerOneLabel);
         configurationPanel.add(playerOnePanel);
         configurationPanel.add(new JLabel());
-
         configurationPanel.add(playerTwoLabel);
         configurationPanel.add(playerTwoPanel);
         configurationPanel.add(new JLabel());
