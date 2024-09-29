@@ -1,0 +1,168 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > GameScoresTests</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">test</a>
+</div>
+
+<h1>Coverage Summary for Class: GameScoresTests (test)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GameScoresTests</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (23/23)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package test;
+&nbsp;
+&nbsp;import org.junit.jupiter.api.BeforeEach;
+&nbsp;import org.junit.jupiter.api.Test;
+&nbsp;import scores.GameScores;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import static org.junit.jupiter.api.Assertions.*;
+&nbsp;
+<b class="fc">&nbsp;class GameScoresTests {</b>
+&nbsp;    private GameScores gameScores;
+&nbsp;
+&nbsp;    @BeforeEach
+&nbsp;    void setUp() {
+&nbsp;        // Initialize gameScores and then set properties
+<b class="fc">&nbsp;        gameScores = new GameScores();</b>
+<b class="fc">&nbsp;        gameScores.setPlayerName(&quot;Test Player&quot;);</b>
+<b class="fc">&nbsp;        gameScores.setScore(100);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    void testScoreInitialization() {
+<b class="fc">&nbsp;        assertEquals(&quot;Test Player&quot;, gameScores.getPlayerName(), &quot;Player name should be initialized correctly.&quot;);</b>
+<b class="fc">&nbsp;        assertEquals(100, gameScores.getScore(), &quot;Score should be initialized correctly.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    void testScoreUpdate() {
+<b class="fc">&nbsp;        gameScores.setScore(150);</b>
+<b class="fc">&nbsp;        assertEquals(150, gameScores.getScore(), &quot;Score should be updated correctly.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    void testPlayerNameUpdate() {
+<b class="fc">&nbsp;        gameScores.setPlayerName(&quot;New Player&quot;);</b>
+<b class="fc">&nbsp;        assertEquals(&quot;New Player&quot;, gameScores.getPlayerName(), &quot;Player name should be updated correctly.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    void testReadScores() {
+&nbsp;        // Assuming we are mocking the readScores method or it reads predefined values
+<b class="fc">&nbsp;        List&lt;GameScores&gt; scores = gameScores.readScores();</b>
+<b class="fc">&nbsp;        assertNotNull(scores, &quot;Scores list should not be null.&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    void testWriteAndClearScores() {
+<b class="fc">&nbsp;        List&lt;GameScores&gt; scoresList = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        scoresList.add(new GameScores()); // Assuming default constructor usage</b>
+<b class="fc">&nbsp;        scoresList.get(0).setPlayerName(&quot;Alice&quot;);</b>
+<b class="fc">&nbsp;        scoresList.get(0).setScore(120);</b>
+<b class="fc">&nbsp;        scoresList.add(new GameScores());</b>
+<b class="fc">&nbsp;        scoresList.get(1).setPlayerName(&quot;Bob&quot;);</b>
+<b class="fc">&nbsp;        scoresList.get(1).setScore(110);</b>
+&nbsp;
+<b class="fc">&nbsp;        gameScores.writeListOfScoresInJSONFile(scoresList);</b>
+<b class="fc">&nbsp;        assertNotNull(gameScores.readScores(), &quot;Scores should not be null after writing.&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        gameScores.clearScores();</b>
+<b class="fc">&nbsp;        assertTrue(gameScores.readScores().isEmpty(), &quot;Scores should be empty after clearing.&quot;);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-09-28 14:00</div>
+</div>
+</body>
+</html>
