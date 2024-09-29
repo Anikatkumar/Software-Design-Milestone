@@ -203,7 +203,7 @@ public class GameScreen extends JFrame {
         this.requestFocusInWindow();
         keyInput.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), "spacePressed");
 
-        if (gameSettings.isExtendModeOn() && !gameSettings.getPlayerOneType().equalsIgnoreCase("External")) {
+        if (!gameSettings.getPlayerOneType().equalsIgnoreCase("External")) {
             // Player 1 Actions
             keyActionMap.put("P1 right", new AbstractAction() {
                 @Override
