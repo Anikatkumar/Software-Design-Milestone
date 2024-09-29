@@ -1,1 +1,42 @@
-[{"playerName":"External","score":8700},{"playerName":"Anonymous Player","score":2100},{"playerName":"Angela","score":1900},{"playerName":"Anonymous Player","score":1600},{"playerName":"External","score":500},{"playerName":"Anonymous Player","score":100},{"playerName":"Anonymous Player","score":100},{"playerName":"Anonymous Player","score":100},{"playerName":"Anonymous Player","score":100},{"playerName":"Anonymous Player","score":900}]
+[
+  {
+    "playerName": "External",
+    "score": 100
+  },
+  {
+    "playerName": "Anonymous Player",
+    "score": 100
+  },
+  {
+    "playerName": "Angela",
+    "score": 100
+  },
+  {
+    "playerName": "Anonymous Player",
+    "score": 200
+  },
+  {
+    "playerName": "External",
+    "score": 500
+  },
+  {
+    "playerName": "Anonymous Player",
+    "score": 100
+  },
+  {
+    "playerName": "Anonymous Player",
+    "score": 100
+  },
+  {
+    "playerName": "Anonymous Player",
+    "score": 100
+  },
+  {
+    "playerName": "Anonymous Player",
+    "score": 100
+  },
+  {
+    "playerName": "Anonymous Player",
+    "score": 900
+  }
+]
