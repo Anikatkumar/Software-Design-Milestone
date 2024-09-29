@@ -280,9 +280,53 @@ public class ConfigurationScreen extends JFrame {
         configurationPanel.add(new JLabel());
         configurationPanel.add(playerOneLabel);
         configurationPanel.add(playerOnePanel);
+        playerOneHuman.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel, playerOneType, playerTwoType);
+            }
+        });
+        playerOneAI.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel, playerOneType, playerTwoType);
+            }
+        });
+        playerOneExternal.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel, playerOneType, playerTwoType);
+            }
+        });
+
         configurationPanel.add(new JLabel());
         configurationPanel.add(playerTwoLabel);
         configurationPanel.add(playerTwoPanel);
+        playerTwoHuman.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (extendModeOn) {
+                    saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel, playerOneType, playerTwoType);
+                }
+            }
+        });
+        playerTwoAI.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (extendModeOn) {
+                    saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel, playerOneType, playerTwoType);
+                }
+            }
+        });
+        playerTwoExternal.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (extendModeOn) {
+                    saveSettings(fieldWidth, fieldHeight, aiModeOn, extendModeOn, gameMusicOn, gameSoundsOn, initialGameLevel, playerOneType, playerTwoType);
+                }
+            }
+        });
+
         configurationPanel.add(new JLabel());
 
         return configurationPanel;

@@ -119,6 +119,9 @@ public class GameBoard extends JPanel {
         } else {
 //            System.out.println("Rotate the piece " + rotation_count + " times.");
             for (int count = 0; count < rotation_count; count++) {
+                if (gameSettings.isGameSoundsOn()) {
+                    GameBlock.playMoveTurnMusic();
+                }
                 rotateBlockOnUpKeyPressed();
             }
         }
@@ -129,6 +132,9 @@ public class GameBoard extends JPanel {
         if (newBlock_initialPosition < x_position) {
 //            System.out.println("Moving Block to the Right");
             while (newBlock_initialPosition < x_position) {
+                if (gameSettings.isGameSoundsOn()) {
+                    GameBlock.playMoveTurnMusic();
+                }
                 moveBlockRight();
                 newBlock_initialPosition++;
             }
@@ -136,6 +142,9 @@ public class GameBoard extends JPanel {
         if (newBlock_initialPosition > x_position) {
 //            System.out.println("Moving Block to the Left");
             while (newBlock_initialPosition > x_position) {
+                if (gameSettings.isGameSoundsOn()) {
+                    GameBlock.playMoveTurnMusic();
+                }
                 moveBlockLeft();
                 newBlock_initialPosition--;
 //                System.out.println("Left");
